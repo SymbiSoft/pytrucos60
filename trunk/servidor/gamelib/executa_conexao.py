@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*-
 #!/usr/bin/env python
 
-# to keep the main game seperate
+# para manter o jogo principal separado
 import logging
 log = logging.getLogger('run_cfg_game')
 

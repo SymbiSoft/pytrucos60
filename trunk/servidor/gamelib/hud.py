@@ -21,7 +21,7 @@ class Hud(cocos.layer.Layer):
         super(Hud, self).__init__()
 
         self.game = jogo
-        self.game.push_handlers(self.on_gamer_connect, self.on_server_status)#self.on_game_over,  self.on_xp_gain,  self.on_game_win,  self.on_game_start , self.on_complete_level)
+        #self.game.push_handlers(self.on_gamer_connect, self.on_server_status)#self.on_game_over,  self.on_xp_gain,  self.on_game_win,  self.on_game_start , self.on_complete_level)
         
         #self.add(BGLayer("TEMP_HUD"))
 

@@ -7,9 +7,15 @@ log = logging.getLogger('ready_menu')
 from cocos.director import director
 from cocos.menu import *
 from cocos.scene import Scene
+from cocos.scenes.transitions import *
 #from lookup import BuildLookupTable, SortByName
 import config
 import constantes
+
+#from aguarda_conexao import TelaConexoes
+import aguarda_conexao
+from bg_layer import BGLayer
+
 
 class MenuConexao( Menu ):
 
@@ -63,6 +69,14 @@ class MenuConexao( Menu ):
         else:
             import jogo
             print "Passei fora do DEBUG"
-            director.push(Scene (jogo.run(self.conexoes[self.conexoes.keys()[self.conexao_escolhida]]))) 
+            
+            # Testando nova tela de Aguardando conexão em 11/05/11
+            #director.push(Scene (jogo.run(self.conexoes[self.conexoes.keys()[self.conexao_escolhida]])))
+            
+            #director.push(Scene (BGLayer("menu"),  TelaConexoes(self.conexoes[self.conexoes.keys()[self.conexao_escolhida]])))
+            tipo_conexao = self.conexoes[self.conexoes.keys()[self.conexao_escolhida]]
+            s = aguarda_conexao.get_menu_conexao(tipo_conexao)
+            director.replace( FadeTransition( s, 1 ) )
+             
             #print self.conexoes[self.conexoes.keys()[self.conexao_escolhida]]
             
