@@ -52,35 +52,31 @@ class Conexao_old(threading.Thread):
 
 
 
-class Conexao: #( threading.Thread ):
+class ConexaoBT(): #threading.Thread):
 
     
     def __init__(self):
-        #threading.Thread.__init__(self)
-        self.socket = None
         self.conn = "Ninguem"
         self.addr = None
         self.event = None
         self.status = u'Iniciado'
         self.conexao = None
-        #self.hud = hud
+        self.socket = None
 
-    def run (self):
-        self.iniciaServidor()
 
     def socket_servidor(self):
         """Cria um servidor Bluetooth com o socket RFCOMM ligado a um determinado canal.
         """
-        socket = BluetoothSocket(proto=RFCOMM)
-        socket.bind(("", PORT_ANY))
-        socket.listen(1)
+        self.socket = BluetoothSocket(proto=RFCOMM)
+        self.socket.bind(("", PORT_ANY))
+        self.socket.listen(1)
         uuid = "94f39d29-7d6d-437d-973b-fba39e49d4ee"
-        advertise_service(socket, "PyTruco4S60",
+        advertise_service(self.socket, "PyTruco4S60",
                           service_id = uuid,
                           service_classes = [ uuid, SERIAL_PORT_CLASS ],
                           profiles = [SERIAL_PORT_PROFILE]
                           )
-        return socket
+
 
 
     def conectaJogador(self, socket):
@@ -89,6 +85,22 @@ class Conexao: #( threading.Thread ):
         return (client, addr)
 
 
+    def recebe_comando(self):
+        print "To esperando um comando"
+        return self.socket.recv(1024)
+        
+        
+    
+    def envia_comando(self, cmd, jogador):
+        """
+            Recebe como parametro cmd = o comando a ser enviado
+                                  jogador: instacia da thread jogador
+        """
+        jogador.envia_comando(cmd)
+
+
+    def obtem_nome(self, endereco):
+        return lookup_name(address=endereco)
 
 
     def iniciaServidor(self):
@@ -145,6 +157,7 @@ class Conexao: #( threading.Thread ):
             self.status = u'Error Inesperado'
 
 
+                
 
 
     def conexaoBluetooth(self):
