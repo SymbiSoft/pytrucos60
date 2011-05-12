@@ -56,6 +56,9 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
         
         game_audio.play_song('music_background1.ogg')
         
+        
+        print jogadores[0].sock
+        
         if jogadores == []:
             print "Jogadores veio vazio!"
         else:
@@ -66,19 +69,19 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
                 print i.nome
                 print i.sock
                 i.envia_comando("Bem Vindo ao Jogo!!")
+        
+        
+        print "Vai começar a recepção:"
+        while True:
+            msg = jogadores[0].recebe_comando()
+            
+            if msg == "sair":
+                break
+            else:
+                print msg
+                jogadores[1].envia_comando(msg)
 
         """
-        self.jogadores = []
-        if self.tipo_conexao == 'bluetooth':
-            self.conexao = ConexaoBT()
-            self.conexao.socket_servidor()
-            self.conecta_jogadoresBT()
-        else:
-            socket = None
-        self.nrJogador=0
-           
-            
-            
         
         print "Vai começar a recepção:"
         """

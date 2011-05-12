@@ -50,7 +50,7 @@ class MenuIniciaPartida(Menu):
                 self.tc.hud.informaJogador(jogadorCPU , nrJogadorCPU)
                 print "nrJogadorCPU: %s" % nrJogadorCPU
                 nrJogadorCPU += 1
-            time.sleep(10)
+            #time.sleep(10)
         
         director.push(Scene (jogo.run(self.tc.jogadores)))
 

@@ -141,7 +141,6 @@ class BluetoothClient(object):
 
 
     def connect2service(self,service):
-        import appuifw
         """
         Connects to the service
         Parameters:
@@ -156,8 +155,8 @@ class BluetoothClient(object):
             sock.connect(service[-2:])
             return sock
         except Exception, e:
-            appuifw.note(u'Failed to connect to the service', 'error')
-            #print 'Failed to connect: %s' %e
+            appuifw.note(u'Falha ao conectar ao serviço', 'error')
+            print 'Falha ao conectar: %s' %e
             return None
 
 
