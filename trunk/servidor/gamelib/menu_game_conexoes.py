@@ -76,7 +76,7 @@ class MenuConexao( Menu ):
             #director.push(Scene (BGLayer("menu"),  TelaConexoes(self.conexoes[self.conexoes.keys()[self.conexao_escolhida]])))
             tipo_conexao = self.conexoes[self.conexoes.keys()[self.conexao_escolhida]]
             s = aguarda_conexao.get_menu_conexao(tipo_conexao)
-            director.replace( FadeTransition( s, 1 ) )
+            director.replace(FadeTransition( s, 1 ) )
              
             #print self.conexoes[self.conexoes.keys()[self.conexao_escolhida]]
             

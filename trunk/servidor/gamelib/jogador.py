@@ -43,6 +43,9 @@ class JogadorBT(threading.Thread):
     def run(self):
         try:
             self.conecta_jogador(self.conexao)
+
+            
+            
             """
             self.envia_comando(self.name)
             time.sleep(8)
@@ -70,19 +73,20 @@ class JogadorBT(threading.Thread):
         
         print 'meu nome é: %s' % self.nome
         self.hud.informaJogador(self.nome, self.numero)
+        self.hud.informaQtdJogador(self.numero+1)
         print self.info
         
 
 
 
     def envia_comando(self, cmd):
-        self.socket.send(cmd)
+        self.sock.send(cmd)
 
     def recebe_comando(self):
-        return self.socket.recv(1024)
+        return self.sock.recv(1024)
     
     def desconecta(self):
-        self.socket.close()
+        self.sock.close()
         print self.client_info, ": desconectado"
     
     

@@ -1,6 +1,7 @@
 #-*- coding: utf-8 -*-
 #!/usr/bin/env python
 
+import time
 
 import cocos
 from cocos.menu import *
@@ -15,24 +16,43 @@ from hud import Hud
 import constantes
 from jogador import JogadorBT
 from conexao import ConexaoBT
-
+from bg_layer import BGLayer
 
 
 class MenuIniciaPartida(Menu):
-    def __init__(self):
+    def __init__(self, tipo_conexao, tc):
         super( MenuIniciaPartida, self).__init__() 
         self.font_item['font_size'] = 16
         self.font_item['color'] = (189,190,190,255)
         self.font_item_selected['font_size'] = 24
         self.font_item_selected['color'] = (128,16,32,255)
+        self.position=(-150,-210)
         
+        
+        
+        self.tc = tc
         items = []
         items.append( MenuItem('Iniciar Partida', self.inicia_partida) )
         self.create_menu(items)
+        
+
 
     def inicia_partida(self):
-        # called by esc
-        director.push(Scene (jogo.run()))
+        qtdJogadoresBT = len(self.tc.jogadores)
+        print "qtdJogadoresBT: ", qtdJogadoresBT
+        qtdJogadoresCPU = qtdJogadoresBT-4
+        nrJogadorCPU = qtdJogadoresBT
+        if qtdJogadoresBT < 4:
+            print "eh menor q 4"
+            while nrJogadorCPU < 4:
+                print "imprimindo CPUs"
+                jogadorCPU = "CPU %s" % nrJogadorCPU
+                self.tc.hud.informaJogador(jogadorCPU , nrJogadorCPU)
+                print "nrJogadorCPU: %s" % nrJogadorCPU
+                nrJogadorCPU += 1
+            time.sleep(10)
+        
+        director.push(Scene (jogo.run(self.tc.jogadores)))
 
     def on_quit(self):
         # called by esc
@@ -40,8 +60,7 @@ class MenuIniciaPartida(Menu):
 
 
 class TelaConexoes(cocos.layer.Layer):
-
-
+    
     def __init__(self, tipo_conexao):
         super( TelaConexoes, self).__init__()
         
@@ -58,13 +77,13 @@ class TelaConexoes(cocos.layer.Layer):
         self.add(self.hud, z=-1)
         
         
-        self.jogadores = Label("Aguardando conexao", font_name='Times New Roman',
+        self.titulo = Label("Aguardando conexao", font_name='Times New Roman',
             font_size=23,
             x=30, y=600,
             anchor_x='left', anchor_y='top')
         
         
-        self.add(self.jogadores)
+        self.add(self.titulo)
         
         
         self.jogadores = []
@@ -93,8 +112,11 @@ class TelaConexoes(cocos.layer.Layer):
                 self.partidaIniciada = True
         self.nrJogadores = len(self.jogadores)        
 
-
-
+    @classmethod
+    def inic_part(self):
+        
+        
+        director.push(Scene (jogo.run(self.jogadores)))
         
         
     
@@ -102,12 +124,14 @@ class TelaConexoes(cocos.layer.Layer):
 
 def get_menu_conexao(tipo_conexao):
     scene = Scene()
-    scene.add( MultiplexLayer(
-                    TelaConexoes(tipo_conexao) 
-                    ),
-                z=2 )
+    tc = TelaConexoes(tipo_conexao)
     
-    scene.add( MenuIniciaPartida(), z=0 )
+    scene.add(BGLayer("conexao"))
+    
+    scene.add( MultiplexLayer(tc), z=2 )
+    
+    mip = MenuIniciaPartida(tipo_conexao, tc)
+    scene.add( mip, z=0 )
     
     return scene
         
