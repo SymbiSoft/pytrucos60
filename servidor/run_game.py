@@ -38,7 +38,7 @@ def set_debug(debug):
         import constantes
         constantes.DEBUG = debug
     except ImportError, exc:
-        print "error: não foi possível encontrar diretório de origem eueueu"
+        print "error: não foi possível encontrar diretório de origem lalala"
         sys.exit(1)
 
 

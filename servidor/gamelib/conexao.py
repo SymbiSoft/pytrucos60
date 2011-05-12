@@ -82,6 +82,8 @@ class ConexaoBT(): #threading.Thread):
     def conectaJogador(self, socket):
         print "Aguardando conexão: "
         (client, addr) = socket.accept()
+        print addr
+        print "  î Conectado!"
         return (client, addr)
 
 

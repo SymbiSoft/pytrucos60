@@ -33,7 +33,7 @@ class Hud(cocos.layer.Layer):
             font_size=16,
             x=700, y=600)
         self.jogadores = Label("Aguardando conexao", font_name='Times New Roman',
-            font_size=23,
+            font_size=23, color=(0, 0, 255, 255),
             x=30, y=600,
             anchor_x='left', anchor_y='top')
 
@@ -58,6 +58,11 @@ class Hud(cocos.layer.Layer):
             x=30, y=470,
             anchor_x='left', anchor_y='top')
 
+        self.qtdJogadores = Label("Numero de Jogadores conectados: 0", font_name='Times New Roman',
+            font_size=30,
+            x=200, y=340,
+            anchor_x='left', anchor_y='top')
+
 
         cocos.actions.FadeOut(0)
 
@@ -66,6 +71,7 @@ class Hud(cocos.layer.Layer):
         self.add(self.jogador2)
         self.add(self.jogador3)
         self.add(self.jogador4)
+        self.add(self.qtdJogadores)
         self.add(self.timer)
         self.start_time = time.time()
         self.clock = time.time()
@@ -79,13 +85,25 @@ class Hud(cocos.layer.Layer):
 
     def update_jogador(self, jogador, posicao):
         if posicao == 0:
+            self.jogador1.element.color = (0,0,255,255)
             self.jogador1.element.text = "Jogador 1: %s Conectado!" % jogador
         elif posicao == 1:
+            self.jogador2.element.color = (0,255,0,255)
             self.jogador2.element.text = "Jogador 2: %s Conectado!" % jogador
         elif posicao == 2:
+            self.jogador3.element.color = (0,0,255,255)
             self.jogador3.element.text = "Jogador 3: %s Conectado!" % jogador
         elif posicao == 3:
+            self.jogador4.element.color = (0,255,0,255)
             self.jogador4.element.text = "Jogador 4: %s Conectado!" % jogador
+
+
+    def informaQtdJogador(self, qtde):
+        self.schedule(lambda qtJog:self.update_QtdJogador(qtde))
+
+
+    def update_QtdJogador(self, qtde):
+        self.qtdJogadores.element.text = "Numero de Jogadores conectados: %s" % qtde
 
 
 

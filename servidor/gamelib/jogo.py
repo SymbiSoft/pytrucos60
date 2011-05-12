@@ -34,7 +34,7 @@ import time
 class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes anims/actions to fail
     eh_manipuador_eventos = True # for actions to work
 
-    def __init__(self): #, tipo_conexao):
+    def __init__(self, jogadores): #, tipo_conexao):
         super(Jogo, self).__init__()
         self.nrJogadores=0
         self.tipo_conexao = 'ooo' #tipo_conexao
@@ -55,7 +55,17 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
         self.do(Delay(3) +CallFunc(self.dispatch_event,'on_game_start') )
         
         game_audio.play_song('music_background1.ogg')
-
+        
+        if jogadores == []:
+            print "Jogadores veio vazio!"
+        else:
+            print "tamanho jogadores:"
+            print len(jogadores)
+            for i in jogadores:
+                print i
+                print i.nome
+                print i.sock
+                i.envia_comando("Bem Vindo ao Jogo!!")
 
         """
         self.jogadores = []
@@ -112,7 +122,10 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
                 self.partidaIniciada = True
         self.nrJogadores = len(self.jogadores)
         
-        
+    def on_quit(self):
+        # called by esc
+        director.scene.end()
+        director.scene.end()
         
 
 Jogo.register_event_type('on_game_start')   
@@ -122,10 +135,10 @@ Jogo.register_event_type('on_gamer_connect')
 Jogo.register_event_type('on_server_status')
 
 
-def run(): #tipo_conexao):
+def run(jogadores): #tipo_conexao):
 
     
-    return Jogo() #tipo_conexao)
+    return Jogo(jogadores) #tipo_conexao)
 
 if __name__ == '__main__':
 
