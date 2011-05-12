@@ -54,7 +54,7 @@ class Game:
     img = None
     def __init__(self, app_path):
         self.path = app_path
-        self.current_state = "splash"
+        self.current_stateMenu = "splash"
         appuifw.app.title = u'PyTruco4S60'
         appuifw.app.exit_key_handler = self.quit
         self.largura_tela,self.altura_tela = self.screen_size()
@@ -73,7 +73,7 @@ class Game:
 
         self.running = 0
         self.canvas=appuifw.Canvas(event_callback=self.callback,
-               redraw_callback=lambda rect:self.draw_state(self.current_state))
+               redraw_callback=lambda rect:self.draw_stateMenu(self.current_stateMenu))
         
         appuifw.app.body = self.canvas
         
@@ -87,15 +87,15 @@ class Game:
         if jaRodou:
             self.running = 0
             self.canvas=appuifw.Canvas(event_callback=self.callback,
-                                       redraw_callback=lambda rect:self.draw_state(self.current_state))
+                                       redraw_callback=lambda rect:self.draw_stateMenu(self.current_stateMenu))
             appuifw.app.body = self.canvas
         appuifw.app.title=unicode(self.configuracao.pref['titulo_jogo'])
         
         self.running = 0
         
-        self.menu = menu(self.path+'\\imgs', self.current_state)
+        self.menu = menu(self.path+'\\imgs', self.current_stateMenu)
         self.desenha_splash()
-        self.current_state = 'menu'
+        self.current_stateMenu = 'menu'
         self.carrega_menu()
         
         appuifw.app.body = self.canvas
@@ -116,34 +116,34 @@ class Game:
     def callback(self, event):
         # Criado para manipular eventos
         #print event
-        self.draw_state(self.current_state)
+        self.draw_stateMenu(self.current_stateMenu)
 
 
 
-    def draw_state(self, current_state):
+    def draw_stateMenu(self, current_stateMenu):
         """Desenha a tela da seleção atual"""
-        self.current_state = current_state
-        if self.current_state == 'menu':
+        self.current_stateMenu = current_stateMenu
+        if self.current_stateMenu == 'menu':
             self.carrega_menu()
             #appuifw.note(u"Menu", "info")
-        elif self.current_state == 'jogar':
+        elif self.current_stateMenu == 'jogar':
             self.jogar()
             #appuifw.note(u"Jogar", "info")
 
-        elif self.current_state == 'conexao':
+        elif self.current_stateMenu == 'conexao':
             self.conexoes()
             #appuifw.note(u"Conexão", "info")
 
-        elif self.current_state == 'opcoes':
+        elif self.current_stateMenu == 'opcoes':
             self.opcoes()
             #appuifw.note(u"Opções", "info")
-        elif self.current_state == 'creditos':
+        elif self.current_stateMenu == 'creditos':
             self.creditos()
             #appuifw.note(u"Créditos", "info")
-        elif self.current_state == 'instrucoes':
+        elif self.current_stateMenu == 'instrucoes':
             self.instrucoes()
             #appuifw.note(u"Instruções", "info")
-        elif self.current_state == 'sair':
+        elif self.current_stateMenu == 'sair':
             self.quit()
             #appuifw.note(u"Sair", "info")
 
@@ -165,7 +165,7 @@ class Game:
             self.canvas.blit(tela_splash) # mostra a imagem na tela
             e32.ao_sleep(0.06)
         e32.ao_sleep(0.5)
-        #self.draw_state('menu')
+        #self.draw_stateMenu('menu')
 
 
 
@@ -179,22 +179,38 @@ class Game:
 
     def jogar(self):
         #appuifw.note(u"Inicia a pardida", "info")
-        #self.current_state = 'menu'
+        #self.current_stateMenu = 'menu'
         #prepare canvas for drawing
-        self.canvas = appuifw.Canvas(event_callback = None,
-                                     redraw_callback = self.event_redraw)
-
-        appuifw.app.body = self.canvas
+        #
+        
+        self.canvas=appuifw.Canvas(event_callback=self.callbackJogo,
+                                       redraw_callback=lambda rect:self.draw_stateJogo(self.current_stateJogo))
+        
+        #self.canvas = appuifw.Canvas(event_callback = None,
+        #                             redraw_callback = self.event_redraw)
+        
+        self.current_stateJogo = 'teste'
         self.conexoes()
+        
+        appuifw.app.body = self.canvas
+        
+        appuifw.note(u"Inicia a pardida", "info")
+        print "Vou chamar tela_aguarda_conexoes()"
 
 
     def conexoes(self): 
         opcoes_conexoes = [u"Bluetooth", u"WI-FI", u"GPRS", u"Voltar"]
-        conexao = appuifw.popup_menu(opcoes_conexoes, u"Tipo de conexão")
-        if conexao == 0:
+        conexaoEscolhida = appuifw.popup_menu(opcoes_conexoes, u"Tipo de conexão")
+        if conexaoEscolhida == 0:
             try:
+                print "vai comecar a conexao:"
                 self.btclient = btclient.BluetoothClient()
+                print "outra linha de conexao"
                 self.connectBT()
+                print "socket dentro de conexoes:"
+                print self.btclient.socket
+                print "passei pela conexao:"
+                self.current_stateJogo = 'conectado'
             except Exception, exc:
                 open("E:\\Python\\errorTestAplic.log", "w").write(traceback.format_exc())
                 raise
@@ -202,7 +218,53 @@ class Game:
             #self.desenha_botoes()
 
             print "Falow, Abraço!!"
-            self.desconectar()
+
+        elif conexaoEscolhida == 1:
+            #wifi()
+            appuifw.note(u"Vou me conectar por wifi" , "info")
+        elif conexaoEscolhida == 2:
+            #gprs()
+            appuifw.note(u"Vou me conectar por gprs" , "info")
+        elif conexaoEscolhida == 3:
+            self.current_stateMenu = 'menu'
+            #self.draw_stateMenu()
+        del conexaoEscolhida
+
+
+            #self.desconectar()
+
+    def draw_stateJogo(self, current_stateJogo):
+        """Desenha a tela da seleção atual"""
+        self.current_state = current_stateJogo
+        if self.current_state == 'teste':
+            self.event_redraw()
+        elif self.current_stateJogo == 'conectado':
+            self.tela_aguarda_conexoes()
+            
+            #self.jogar()
+
+
+    def callbackJogo(self, event):
+        # Criado para manipular eventos
+        #print event
+        self.draw_stateJogo(self.current_stateJogo)
+
+
+    def tela_aguarda_conexoes(self):
+        print "To dentro de tela_aguarda_conexoes()"
+        self.canvas.clear()
+        lado1 = self.largura_tela/3
+        lado2 = self.altura_tela/5
+        myscreen = Image.new((self.largura_tela,self.altura_tela))
+        myscreen.clear((15,126,0))
+        
+        myscreen.text((lado1,lado2), u"Aguardando Jogadores", fill = RGB_BLACK,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))  
+        print "passei por aki t_a_c"
+        self.canvas.blit(myscreen) # show the image on the screen
+
+        while self.btclient.is_connected():
+            data = self.btclient.recebe_comando()
+            appuifw.note(u"%s" % data)
 
 
     def desenha_botoes(self):
@@ -236,6 +298,9 @@ class Game:
         
         self.canvas.blit(myscreen) # show the image on the screen
 
+        while self.btclient.is_connected():
+            data = self.btclient.recebe_comando()
+            appuifw.note(u"%s" % data)
 
     def enviaPosicao(self, event):
         self.btclient.send_command(str(event))
@@ -254,8 +319,37 @@ class Game:
 
 
     #Redraw function, used as a callback for canvas events.
-    def event_redraw(self, other):
-        self.desenha_botoes()
+     
+
+    def event_redraw(self): #, other):
+        
+        #self.desenha_botoes()
+        #self.tela_aguarda_conexoes()
+        print "event_redraw"
+        """
+        try:
+            if self.btclient.is_connected():
+                self.tela_aguarda_conexoes()
+                
+            print "Ta conectado?"
+            print self.btclient.is_connected()
+            print "Tem certeza??"
+            print self.btclient.socket
+                
+        except:
+        """
+        self.canvas.clear()
+        lado1 = self.largura_tela/3
+        lado2 = self.altura_tela/5
+        myscreen = Image.new((self.largura_tela,self.altura_tela))
+        myscreen.clear((15,126,0))
+        self.canvas.blit(myscreen)
+        print "event_redraw except"
+        print other
+
+
+        
+        
 
 
 
@@ -299,8 +393,8 @@ class Game:
             #gprs()
             appuifw.note(u"Vou me conectar por gprs" , "info")
         elif conexao == 3:
-            self.current_state = 'menu'
-            #self.draw_state()
+            self.current_stateMenu = 'menu'
+            #self.draw_stateMenu()
         del conexao
 
 
@@ -322,26 +416,28 @@ class Game:
         """
         try:
             self.btclient.connect()
+            print "socket dentro de connectBT:"
+            print self.btclient.socket
         except BluetoothError, e:
             appuifw.note(u"Erro na execução do Bluetooth %s"%e, "error")
 
 
     def opcoes(self): 
         appuifw.note(u"Função Opções", "error")
-        self.current_state = 'menu'
+        self.current_stateMenu = 'menu'
 
     
     def creditos(self):
         import creditos
         creditos = creditos.Creditos()
-        tela_creditos = creditos.desenha_tela(self.menu.touch, self.current_state)
+        tela_creditos = creditos.desenha_tela(self.menu.touch, self.current_stateMenu)
         self.canvas.blit(tela_creditos) # mostra a imagem na tela
         
         #bind the tapping areas
         for i in self.menu.touch['buttons']:
             self.canvas.bind(key_codes.EButton1Down, self.touch_down_creditos_cb, i )
             self.canvas.bind(key_codes.EButton1Up, self.touch_up_creditos_cb, i )
-        #self.current_state = 'menu'
+        #self.current_stateMenu = 'menu'
 
     def touch_down_creditos_cb(self, pos=(0, 0)):
         "detecta qual butão foi pressionado"
@@ -354,8 +450,8 @@ class Game:
     def touch_up_creditos_cb(self, pos=(0, 0)):
         if self.menu.touch.has_key('down'):
             if self.menu.touch['down'] == 0:
-                self.current_state = 'menu'
-                #self.draw_state()
+                self.current_stateMenu = 'menu'
+                #self.draw_stateMenu()
 
             del self.menu.touch['down']
 
@@ -363,7 +459,7 @@ class Game:
 
     def instrucoes(self):
         print "To em instrucoes!!!"
-        self.current_state = 'menu'
+        self.current_stateMenu = 'menu'
 
 
 
@@ -385,23 +481,23 @@ class Game:
     def touch_up_menu_cb(self, pos=(0, 0)):
         if self.menu.touch.has_key('main_down'):
             if self.menu.touch['main_down'] == 'jogar':
-                self.current_state = 'jogar'
-                self.draw_state(self.current_state)
+                self.current_stateMenu = 'jogar'
+                self.draw_stateMenu(self.current_stateMenu)
             elif self.menu.touch['main_down'] == 'conexao':
-                self.current_state = 'conexao'
-                self.draw_state(self.current_state)
+                self.current_stateMenu = 'conexao'
+                self.draw_stateMenu(self.current_stateMenu)
             elif self.menu.touch['main_down'] == 'opcoes':
-                self.current_state = 'opcoes'
-                self.draw_state(self.current_state)
+                self.current_stateMenu = 'opcoes'
+                self.draw_stateMenu(self.current_stateMenu)
             elif self.menu.touch['main_down'] == 'creditos':
-                self.current_state = 'creditos'
-                self.draw_state(self.current_state)
+                self.current_stateMenu = 'creditos'
+                self.draw_stateMenu(self.current_stateMenu)
             elif self.menu.touch['main_down'] == 'instrucoes':
-                self.current_state = 'instrucoes'
-                self.draw_state(self.current_state)
+                self.current_stateMenu = 'instrucoes'
+                self.draw_stateMenu(self.current_stateMenu)
             elif self.menu.touch['main_down'] == 'sair':
-                self.current_state = 'sair'
-                self.draw_state(self.current_state)
+                self.current_stateMenu = 'sair'
+                self.draw_stateMenu(self.current_stateMenu)
 
             del self.menu.touch['main_down']
 
