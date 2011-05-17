@@ -2,6 +2,7 @@
 #!/usr/bin/env python
 
 import time
+import os
 
 import cocos
 from cocos.menu import *
@@ -14,7 +15,7 @@ from cocos.scenes.transitions import *
 import jogo
 from hud import Hud
 import constantes
-from jogador import JogadorBT
+from jogador import JogadorBT, GerenciaConexao
 from conexao import ConexaoBT
 from bg_layer import BGLayer
 
@@ -95,11 +96,18 @@ class TelaConexoes(cocos.layer.Layer):
             socket = None
         self.nrJogador=0
         
-        
-    
-        
-        
     def conecta_jogadoresBT(self):
+        if not self.partidaIniciada:
+            gerenteConexao = GerenciaConexao(self.conexao, self.hud)
+            gerenteConexao.setDaemon(True)
+            gerenteConexao.start()
+            #self.partidaIniciada = gerenteConexao.status
+            
+        
+        
+        
+        
+    def conecta_jogadoresBT_old(self):
         self.nrJogador = 0
         while not self.partidaIniciada:
             print "Rodei pela %sa. vez" % self.nrJogador
@@ -108,18 +116,16 @@ class TelaConexoes(cocos.layer.Layer):
             self.jogadores[self.nrJogador].start()
             self.nrJogador+=1
             
-            if len(self.jogadores)>=2:
+            if len(self.jogadores)==2:
                 self.partidaIniciada = True
         self.nrJogadores = len(self.jogadores)        
 
-    @classmethod
-    def inic_part(self):
-        
-        
-        director.push(Scene (jogo.run(self.jogadores)))
-        
-        
-    
+
+
+
+
+
+
 
 
 def get_menu_conexao(tipo_conexao):
@@ -134,7 +140,3 @@ def get_menu_conexao(tipo_conexao):
     scene.add( mip, z=0 )
     
     return scene
-        
-        
-        
-        

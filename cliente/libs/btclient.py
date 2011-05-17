@@ -82,12 +82,12 @@ class BluetoothClient(object):
         """
         if not self.is_connected():
             raise BluetoothError(u"Not connected.")
-        try:
-            data = self.socket.recv(1024)
-        except socket.error:
-            raise BluetoothError(u"Communication error.")
-        except:
-            raise BluetoothError(u"Unexpected error.")
+        #try:
+        data = self.socket.recv(1024)
+        #except socket.error:
+        #    raise BluetoothError(u"Communication error.")
+        #except:
+        #    raise BluetoothError(u"Unexpected error.")
         return data
 
 
