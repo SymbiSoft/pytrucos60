@@ -39,6 +39,7 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
         self.nrJogadores=0
         self.tipo_conexao = 'ooo' #tipo_conexao
         self.partidaIniciada = False
+        self.jogadores = jogadores
 
         print "tipo de conexao => %s " % self.tipo_conexao
 
@@ -55,31 +56,46 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
         self.do(Delay(3) +CallFunc(self.dispatch_event,'on_game_start') )
         
         game_audio.play_song('music_background1.ogg')
+            
         
+        jogadoresAtivos = [x for x in self.jogadores if x.isAlive() == False]
         
-        print jogadores[0].sock
-        
-        if jogadores == []:
+        if self.jogadores == []:
             print "Jogadores veio vazio!"
         else:
             print "tamanho jogadores:"
-            print len(jogadores)
-            for i in jogadores:
+            print len(self.jogadores)
+            for i in jogadoresAtivos:
                 print i
                 print i.nome
                 print i.sock
                 i.envia_comando("Bem Vindo ao Jogo!!")
         
-        
+        qtdJogadoresAtivos = len(jogadoresAtivos)
         print "Vai começar a recepção:"
+        
+        th=Thread( target=self.aguarda_comando, args = ( qtdJogadoresAtivos, ))
+        th.setDaemon(True)
+        th.start()
+        #Thread(self.aguarda_comando()).start()
+        
+        
+        
+        
+        
+        
+    def aguarda_comando(self, qtdJogadoresAtivos):
+        i = 0
         while True:
-            msg = jogadores[0].recebe_comando()
-            
+            if i == qtdJogadoresAtivos:
+                i = 0
+            msg = self.jogadores[i].recebe_comando()
+            i += 1
             if msg == "sair":
                 break
             else:
                 print msg
-                jogadores[1].envia_comando(msg)
+                self.jogadores[1].envia_comando(msg)
 
         """
         

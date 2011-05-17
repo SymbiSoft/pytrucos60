@@ -11,37 +11,96 @@ Created on Mar 03, 2011
 import threading
 import time
 
-class Jogador_temp:
+class Jogador:
     """Objeto Jogador
     """
-    def __init__(self, tipo_conexao):
+    def __init__(self, tipo_conexao, conexao, hud ):
         self.nome = "Jogador"
         self.cartasMao = []
         self.equipe = None
+        self.tipo_conexao = tipo_conexao
         self.ehRemoto = False
+        self.conexao = conexao 
+        self.hud = hud
+        self.sock = None
+        self.info = None
     
-    def conectaJogador(self):
-        pass
+    def conectaJogador_temp(self):
+        if self.tipo_conexao == 'bluetooth':
+            
+            JogadorBT()
+
+
+
+class GerenciaConexao(threading.Thread):
+    def __init__ (self, conexao, hud):
+        threading.Thread.__init__(self)
+        self.conexao = conexao
+        self.hud = hud
+        self.jogadores = []
+        
+        
+    
+    def run(self):
+        self.status = self.conecta_jogadores()
+        
+
+
+
+    def conecta_jogadores(self):
+        partidaIniciada = False
+        self.nrJogador = 0
+        while not partidaIniciada:
+            print "Rodei pela %sa. vez" % self.nrJogador
+            (sock, info) = self.conexao.conectaJogador(self.conexao.socket)
+            self.jogadores.append(JogadorBT(self.conexao, sock, info, self.nrJogador))
+            print "Iniciei um jogador"
+            self.hud.informaJogador(self.jogadores[self.nrJogador].nome, self.nrJogador)
+            self.nrJogador+=1
+            if len(self.jogadores)==2:
+                partidaIniciada = True       
+        self.nrJogadores = len(self.jogadores) 
+        return partidaIniciada       
+
+
+
+
+
+class JogadorBT(Jogador):
+    def __init__ (self, conexao, sock, info, num):
+        self.socket = sock
+        self.info = info
+        self.numero = num
+        self.nome = conexao.obtem_nome(self.info[0])
+        
+        
+    
+        
 
 
 
 
 #JogadorThread
-class JogadorBT(threading.Thread):
+class JogadorBT_old(Jogador, threading.Thread):
     def __init__ (self,conexao, hud, num):
         threading.Thread.__init__(self)
-        self.nome = 'sem nome'
         self.numero = num
         self.conexao = conexao
+        self.hud = hud
+        self.nome = "Jogador"
         self.sock = None
         self.info = None
-        self.hud = hud
         #self.quem = quem
         #self.isRunning = threading.Event()
         #self.isRunning.clear()
 
+
+
+
+
     def run(self):
         try:
+            
             self.conecta_jogador(self.conexao)
 
             
@@ -74,6 +133,7 @@ class JogadorBT(threading.Thread):
         print 'meu nome é: %s' % self.nome
         self.hud.informaJogador(self.nome, self.numero)
         self.hud.informaQtdJogador(self.numero+1)
+        self.envia_comando("%s Conectado!" % self.nome)
         print self.info
         
 

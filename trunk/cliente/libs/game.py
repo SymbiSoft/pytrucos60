@@ -59,6 +59,7 @@ class Game:
         appuifw.app.exit_key_handler = self.quit
         self.largura_tela,self.altura_tela = self.screen_size()
         self.configuracao = configure(self.path)
+        self.conexao = None
 
         #definindo o orientação da tela como paisagens, ou seja a teal deitada.
         appuifw.app.orientation = 'landscape'
@@ -82,7 +83,7 @@ class Game:
         self.reset()
         
     #Redefini a aplicação ao seu estado inicial
-    def reset(self,jaRodou=0):
+    def reset(self, jaRodou=0):
         #Definindo o titulo da aplicação
         if jaRodou:
             self.running = 0
@@ -183,19 +184,24 @@ class Game:
         #prepare canvas for drawing
         #
         
-        self.canvas=appuifw.Canvas(event_callback=self.callbackJogo,
-                                       redraw_callback=lambda rect:self.draw_stateJogo(self.current_stateJogo))
+        #self.canvas=appuifw.Canvas(event_callback=None, #self.callbackJogo,
+        #                           redraw_callback=lambda rect:self.draw_stateJogo(self.current_stateJogo))
         
-        #self.canvas = appuifw.Canvas(event_callback = None,
-        #                             redraw_callback = self.event_redraw)
         
-        self.current_stateJogo = 'teste'
-        self.conexoes()
+        self.canvas = appuifw.Canvas(event_callback = None,
+                                     redraw_callback = self.event_redraw)
         
         appuifw.app.body = self.canvas
         
-        appuifw.note(u"Inicia a pardida", "info")
-        print "Vou chamar tela_aguarda_conexoes()"
+        appuifw.app.exit_key_handler = self.quit
+        
+        self.current_stateJogo = 'teste'
+        self.conexoes()
+        #appuifw.note(u"Inicia a pardida", "info")
+        
+        
+        
+        #self.tela_aguarda_conexoes()
 
 
     def conexoes(self): 
@@ -204,13 +210,15 @@ class Game:
         if conexaoEscolhida == 0:
             try:
                 print "vai comecar a conexao:"
-                self.btclient = btclient.BluetoothClient()
+                self.conexao = btclient.BluetoothClient()
                 print "outra linha de conexao"
                 self.connectBT()
                 print "socket dentro de conexoes:"
-                print self.btclient.socket
+                print self.conexao.socket
                 print "passei pela conexao:"
                 self.current_stateJogo = 'conectado'
+                print "Vou chamar tela_aguarda_conexoes()"
+                self.tela_aguarda_conexoes()
             except Exception, exc:
                 open("E:\\Python\\errorTestAplic.log", "w").write(traceback.format_exc())
                 raise
@@ -261,10 +269,25 @@ class Game:
         myscreen.text((lado1,lado2), u"Aguardando Jogadores", fill = RGB_BLACK,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))  
         print "passei por aki t_a_c"
         self.canvas.blit(myscreen) # show the image on the screen
-
-        while self.btclient.is_connected():
-            data = self.btclient.recebe_comando()
-            appuifw.note(u"%s" % data)
+        
+        '''Desenha um retangulo lilaz e o texto'''
+        myscreen.rectangle(((10+lado1,10+lado2), (10+2*lado1,(2*lado2)+10)), fill=RGB_PURPLE, width=5)
+        myscreen.text((20+lado1,lado2+45), u"Mandar msg", fill = RGB_BLACK,font=(u'Nokia Hindi S60',10,appuifw.STYLE_BOLD))  
+        '''Vincula a função TAP ao retangulo Lilas'''
+        self.canvas.bind(key_codes.EButton1Up, self.enviaPosicao, ((10+lado1,10+lado2), (10+2*lado1,(2*lado2)+10)))
+        
+        pos = 35
+        while self.conexao.is_connected():
+            print "aguardando o comando"
+            myscreen.text((lado1+10,lado2+30), u"Aguardando um comando", fill = RGB_BLACK,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))
+            self.canvas.blit(myscreen)
+            self.conexao.send_command("Entrei no Jogooo!! wan")
+            data = self.conexao.recebe_comando()
+            print "Vou imprimir o q recebi: %s" % data
+            myscreen.text((lado1+10,lado2+pos), u"%s" % data, fill = RGB_BLACK,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))
+            self.canvas.blit(myscreen)
+            pos += 5
+            #appuifw.note(u"%s" % data)
 
 
     def desenha_botoes(self):
@@ -298,43 +321,43 @@ class Game:
         
         self.canvas.blit(myscreen) # show the image on the screen
 
-        while self.btclient.is_connected():
-            data = self.btclient.recebe_comando()
+        while self.conexao.is_connected():
+            data = self.conexao.recebe_comando()
             appuifw.note(u"%s" % data)
 
     def enviaPosicao(self, event):
-        self.btclient.send_command(str(event))
+        self.conexao.send_command(str(event))
 
 
     def desconectar(self, event):
         txtDescon = "sair"
-        self.btclient.send_command(txtDescon)
+        self.conexao.send_command(txtDescon)
         self.disconnect()
         self.canvas.clear()
         self.reset()
 
     def enviaTexto(self, event):
         txtEnviar = "s"
-        self.btclient.send_command(txtEnviar)
+        self.conexao.send_command(txtEnviar)
 
 
     #Redraw function, used as a callback for canvas events.
      
 
-    def event_redraw(self): #, other):
+    def event_redraw(self, other):
         
         #self.desenha_botoes()
         #self.tela_aguarda_conexoes()
         print "event_redraw"
         """
         try:
-            if self.btclient.is_connected():
+            if self.conexao.is_connected():
                 self.tela_aguarda_conexoes()
                 
             print "Ta conectado?"
-            print self.btclient.is_connected()
+            print self.conexao.is_connected()
             print "Tem certeza??"
-            print self.btclient.socket
+            print self.conexao.socket
                 
         except:
         """
@@ -344,10 +367,15 @@ class Game:
         myscreen = Image.new((self.largura_tela,self.altura_tela))
         myscreen.clear((15,126,0))
         self.canvas.blit(myscreen)
-        print "event_redraw except"
+        #print "event_redraw except"
         print other
-
-
+        
+        try:
+            teste = self.conexao
+            self.tela_aguarda_conexoes()
+        except:
+            print "event_redraw except"
+            
         
         
 
@@ -364,7 +392,7 @@ class Game:
         conexao = appuifw.popup_menu(opcoes_conexoes, u"Tipo de conexão")
         if conexao == 0:
             try:
-                self.btclient = btclient.BluetoothClient()
+                self.conexao = btclient.BluetoothClient()
                 self.connectBT()
             except Exception, exc:
                 open("E:\\Python\\pytruco\\Meu_error.log", "w").write(traceback.format_exc())
@@ -373,7 +401,7 @@ class Game:
             while True:
                 msg = raw_input('Digite aki ->>> ')
                 if len(msg) == 0 or msg == 'x': 
-                    self.btclient.send_command(msg)
+                    self.conexao.send_command(msg)
                     print "Tchauuu!"
                     break
                 self.disconnect()
@@ -402,12 +430,12 @@ class Game:
         """Disconnects from the server.
         """
         try:
-            self.btclient.close()
-            if self.btclient:
-                print "ainda tinha o socket: %s" % self.btclient
-                del self.btclient
+            self.conexao.close()
+            if self.conexao:
+                print "ainda tinha o socket: %s" % self.conexao
+                del self.conexao
         except BluetoothError, e:
-            appuifw.note(_(e.msg), "error")
+            appuifw.note(e.msg, "error")
 
 
 
@@ -415,9 +443,9 @@ class Game:
         """Conecta ao servidor.
         """
         try:
-            self.btclient.connect()
+            self.conexao.connect()
             print "socket dentro de connectBT:"
-            print self.btclient.socket
+            print self.conexao.socket
         except BluetoothError, e:
             appuifw.note(u"Erro na execução do Bluetooth %s"%e, "error")
 
@@ -517,6 +545,7 @@ class Game:
 
     #Exit function
     def quit(self):
+        print "Sairrrr"
         self.running = -1
         #if self.bt != None:
         #    print u'EXIT'
