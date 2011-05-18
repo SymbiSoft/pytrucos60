@@ -17,6 +17,7 @@ import aguarda_conexao
 from bg_layer import BGLayer
 
 
+
 class MenuConexao( Menu ):
 
     def __init__(self):
@@ -80,3 +81,8 @@ class MenuConexao( Menu ):
              
             #print self.conexoes[self.conexoes.keys()[self.conexao_escolhida]]
             
+
+def get_scene():
+    scene = Scene(BGLayer("menu"), MenuConexao() )
+    return scene
+

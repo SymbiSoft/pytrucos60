@@ -32,8 +32,8 @@ class Jogador:
 
 
 
-class GerenciaConexao(threading.Thread):
-    def __init__ (self, conexao, hud):
+class GerenciaJogadores(threading.Thread):
+    def __init__ (self, conexao, hud, jogadores):
         threading.Thread.__init__(self)
         self.conexao = conexao
         self.hud = hud
@@ -42,7 +42,7 @@ class GerenciaConexao(threading.Thread):
         
     
     def run(self):
-        self.status = self.conecta_jogadores()
+        self.jogadores = self.conecta_jogadores()
         
 
 
@@ -50,17 +50,18 @@ class GerenciaConexao(threading.Thread):
     def conecta_jogadores(self):
         partidaIniciada = False
         self.nrJogador = 0
+        jogadores = []
         while not partidaIniciada:
             print "Rodei pela %sa. vez" % self.nrJogador
             (sock, info) = self.conexao.conectaJogador(self.conexao.socket)
-            self.jogadores.append(JogadorBT(self.conexao, sock, info, self.nrJogador))
+            jogadores.append(JogadorBT(self.conexao, sock, info, self.nrJogador))
             print "Iniciei um jogador"
-            self.hud.informaJogador(self.jogadores[self.nrJogador].nome, self.nrJogador)
+            self.hud.informaJogador(jogadores[self.nrJogador].nome, self.nrJogador)
             self.nrJogador+=1
-            if len(self.jogadores)==2:
+            if len(jogadores)==2:
                 partidaIniciada = True       
-        self.nrJogadores = len(self.jogadores) 
-        return partidaIniciada       
+        self.nrJogadores = len(jogadores) 
+        return jogadores       
 
 
 
@@ -74,9 +75,11 @@ class JogadorBT(Jogador):
         self.nome = conexao.obtem_nome(self.info[0])
         
         
-    
+    def envia_comando(self, cmd):
+        self.socket.send(cmd)    
         
-
+    def recebe_comando(self):
+        return self.socket.recv(1024)
 
 
 
