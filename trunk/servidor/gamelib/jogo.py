@@ -58,20 +58,20 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
         game_audio.play_song('music_background1.ogg')
             
         
-        jogadoresAtivos = [x for x in self.jogadores if x.isAlive() == False]
+        #jogadoresAtivos = [x for x in self.jogadores if x.isAlive() == False]
         
         if self.jogadores == []:
             print "Jogadores veio vazio!"
         else:
             print "tamanho jogadores:"
             print len(self.jogadores)
-            for i in jogadoresAtivos:
+            for i in self.jogadores:
                 print i
                 print i.nome
-                print i.sock
+                print i.socket
                 i.envia_comando("Bem Vindo ao Jogo!!")
         
-        qtdJogadoresAtivos = len(jogadoresAtivos)
+        qtdJogadoresAtivos = len(self.jogadores)
         print "Vai começar a recepção:"
         
         th=Thread( target=self.aguarda_comando, args = ( qtdJogadoresAtivos, ))

@@ -15,7 +15,7 @@ from cocos.scenes.transitions import *
 import jogo
 from hud import Hud
 import constantes
-from jogador import JogadorBT, GerenciaConexao
+from jogador import JogadorBT, GerenciaJogadores
 from conexao import ConexaoBT
 from bg_layer import BGLayer
 
@@ -39,7 +39,7 @@ class MenuIniciaPartida(Menu):
 
 
     def inicia_partida(self):
-        qtdJogadoresBT = len(self.tc.jogadores)
+        qtdJogadoresBT = len(self.tc.obtemJogadores())
         print "qtdJogadoresBT: ", qtdJogadoresBT
         qtdJogadoresCPU = qtdJogadoresBT-4
         nrJogadorCPU = qtdJogadoresBT
@@ -53,7 +53,7 @@ class MenuIniciaPartida(Menu):
                 nrJogadorCPU += 1
             #time.sleep(10)
         
-        director.push(Scene (jogo.run(self.tc.jogadores)))
+        director.push(Scene (jogo.run(self.tc.obtemJogadores())))
 
     def on_quit(self):
         # called by esc
@@ -89,21 +89,28 @@ class TelaConexoes(cocos.layer.Layer):
         
         self.jogadores = []
         if self.tipo_conexao == 'bluetooth':
-            self.conexao = ConexaoBT()
-            self.conexao.socket_servidor()
-            self.conecta_jogadoresBT()
+            try:
+                self.conexao = ConexaoBT()
+                self.conexao.socket_servidor()
+            except:
+                print "Erro com o dispositivo de bluetooth"
+            else:
+                self.conecta_jogadoresBT()
         else:
             socket = None
         self.nrJogador=0
         
     def conecta_jogadoresBT(self):
         if not self.partidaIniciada:
-            gerenteConexao = GerenciaConexao(self.conexao, self.hud)
-            gerenteConexao.setDaemon(True)
-            gerenteConexao.start()
+            self.gerenteConexao = GerenciaJogadores(self.conexao, self.hud, self.jogadores)
+            self.gerenteConexao.setDaemon(True)
+            self.gerenteConexao.start()
+            
+            #print gerenteConexao.jogadores
             #self.partidaIniciada = gerenteConexao.status
             
-        
+    def obtemJogadores(self):
+        return self.gerenteConexao.jogadores
         
         
         

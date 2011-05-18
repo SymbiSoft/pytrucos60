@@ -38,8 +38,7 @@ class ConexaoBT(): #threading.Thread):
         advertise_service(self.socket, "PyTruco4S60",
                           service_id = uuid,
                           service_classes = [ uuid, SERIAL_PORT_CLASS ],
-                          profiles = [SERIAL_PORT_PROFILE]
-                          )
+                          profiles = [SERIAL_PORT_PROFILE])
 
 
 

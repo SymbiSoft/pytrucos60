@@ -1,4 +1,4 @@
-#Thu May 12 01:09:54 BRT 2011
+#Tue May 17 23:57:25 BRT 2011
 eclipse.preferences.version=1
 encoding//cliente/libs/btclient.py=utf-8
 encoding//cliente/libs/game.py=utf-8
@@ -12,7 +12,7 @@ encoding//servidor/gamelib/hud.py=utf-8
 encoding//servidor/gamelib/jogador.py=utf-8
 encoding//servidor/gamelib/jogo.py=utf-8
 encoding//servidor/gamelib/main.py=utf-8
-encoding//servidor/gamelib/menu_game_conexoes.py=utf-8
+encoding//servidor/gamelib/menu_conexoes.py=utf-8
 encoding//servidor/gamelib/menu_main.py=utf-8
 encoding//servidor/gamelib/screen_config.py=utf-8
 encoding//servidor/run_game.py=utf-8
