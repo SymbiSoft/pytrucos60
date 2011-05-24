@@ -42,7 +42,7 @@ def run():
  
     mainmenu = Scene(BGLayer("menu"), MainMenu())
     intro = Scene(BGLayer("splash"))
-    game_audio.play_song('music_intro.ogg')
+    #game_audio.play_song('music_intro.ogg')
     
 
     director.window.set_fullscreen(config.fullscreen)

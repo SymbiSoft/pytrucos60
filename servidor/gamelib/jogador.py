@@ -57,13 +57,29 @@ class GerenciaJogadores(threading.Thread):
             jogadores.append(JogadorBT(self.conexao, sock, info, self.nrJogador))
             print "Iniciei um jogador"
             self.hud.informaJogador(jogadores[self.nrJogador].nome, self.nrJogador)
+            if len(jogadores)>1:
+                jogadores[self.nrJogador].envia_comando("cmd:ehmaiorq1")
+                print jogadores[self.nrJogador].recebe_comando()
+                cmd = ''
+                for jogador in jogadores:
+                    
+                    jogador.envia_comando("jogadorcnt:%s:%s" % (jogadores[self.nrJogador].nome, self.nrJogador))
+                    print "Enviei jogadorcnt:%s:%s" % (jogadores[self.nrJogador].nome, self.nrJogador)
+                    cmd += jogador.nome + ':' + str(jogador.numero) + "|"
+                jogadores[self.nrJogador].envia_comando("cmd:%s"%cmd)
+            else:
+                print "eh o primeiro"
+                jogadores[self.nrJogador].envia_comando("cmd:primeiro")
+                print "Enviei cmd:primeiro para %s" % jogadores[self.nrJogador].nome
+                print jogadores[self.nrJogador].recebe_comando()
+                infoJogador1 = "%s:%s" % (jogadores[self.nrJogador].nome, self.nrJogador)
+                jogadores[self.nrJogador].envia_comando(infoJogador1)
+
             self.nrJogador+=1
             if len(jogadores)==2:
                 partidaIniciada = True       
         self.nrJogadores = len(jogadores) 
         return jogadores       
-
-
 
 
 
@@ -73,6 +89,7 @@ class JogadorBT(Jogador):
         self.info = info
         self.numero = num
         self.nome = conexao.obtem_nome(self.info[0])
+        self.estahRodando = False
         
         
     def envia_comando(self, cmd):
@@ -80,6 +97,9 @@ class JogadorBT(Jogador):
         
     def recebe_comando(self):
         return self.socket.recv(1024)
+    
+    def desconecta(self):
+        self.socket.close()
 
 
 
