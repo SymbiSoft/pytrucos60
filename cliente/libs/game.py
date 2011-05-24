@@ -34,7 +34,7 @@
 
 import appuifw
 import e32
-
+from threading import Thread
 import traceback
 
 from configure import *
@@ -60,6 +60,7 @@ class Game:
         self.largura_tela,self.altura_tela = self.screen_size()
         self.configuracao = configure(self.path)
         self.conexao = None
+        
 
         #definindo o orientação da tela como paisagens, ou seja a teal deitada.
         appuifw.app.orientation = 'landscape'
@@ -128,7 +129,15 @@ class Game:
             self.carrega_menu()
             #appuifw.note(u"Menu", "info")
         elif self.current_stateMenu == 'jogar':
-            self.jogar()
+            #self.jogar()
+            try:
+                jogo = Jogar()
+                jogo.conexoes()
+                appuifw.note(u"passei de jogo.conexoes" , "info")
+                self.running = jogo.running
+            except Exception, exc:
+                open("E:\\Python\\pytruco\\Meu_error.log", "w").write(traceback.format_exc())
+                raise
             #appuifw.note(u"Jogar", "info")
 
         elif self.current_stateMenu == 'conexao':
@@ -160,294 +169,12 @@ class Game:
             mascaraSplash.clear((texte,texte,texte))
             tela_splash.clear((fond,fond,fond))
             tela_splash.blit(self.menu.splash,mask=mascaraSplash)
-            #myscreen.text( ( 80+i*5 , 160+i*5 ) , u'Toque na tela para continuar ', 0x000000, "normal")
-            #myscreen.text((80,70),nom,(150*texte/255,texte,20*texte/255),"title")
-            #myscreen.text((10,300),version,(texte,texte,texte))
             self.canvas.blit(tela_splash) # mostra a imagem na tela
             e32.ao_sleep(0.06)
         e32.ao_sleep(0.5)
         #self.draw_stateMenu('menu')
 
 
-
-# *******Inicio****** To vendo agora sobre canvas - em 28/04/11 **************
-
-
-
-
-
-
-
-    def jogar(self):
-        #appuifw.note(u"Inicia a pardida", "info")
-        #self.current_stateMenu = 'menu'
-        #prepare canvas for drawing
-        #
-        
-        #self.canvas=appuifw.Canvas(event_callback=None, #self.callbackJogo,
-        #                           redraw_callback=lambda rect:self.draw_stateJogo(self.current_stateJogo))
-        
-        
-        self.canvas = appuifw.Canvas(event_callback = None,
-                                     redraw_callback = self.event_redraw)
-        
-        appuifw.app.body = self.canvas
-        
-        appuifw.app.exit_key_handler = self.quit
-        
-        self.current_stateJogo = 'teste'
-        self.conexoes()
-        #appuifw.note(u"Inicia a pardida", "info")
-        
-        
-        
-        #self.tela_aguarda_conexoes()
-
-
-    def conexoes(self): 
-        opcoes_conexoes = [u"Bluetooth", u"WI-FI", u"GPRS", u"Voltar"]
-        conexaoEscolhida = appuifw.popup_menu(opcoes_conexoes, u"Tipo de conexão")
-        if conexaoEscolhida == 0:
-            try:
-                print "vai comecar a conexao:"
-                self.conexao = btclient.BluetoothClient()
-                print "outra linha de conexao"
-                self.connectBT()
-                print "socket dentro de conexoes:"
-                print self.conexao.socket
-                print "passei pela conexao:"
-                self.current_stateJogo = 'conectado'
-                print "Vou chamar tela_aguarda_conexoes()"
-                self.tela_aguarda_conexoes()
-            except Exception, exc:
-                open("E:\\Python\\errorTestAplic.log", "w").write(traceback.format_exc())
-                raise
-            #appuifw.note(u"Vou me conectar por Bluetooth" , "info")
-            #self.desenha_botoes()
-
-            print "Falow, Abraço!!"
-
-        elif conexaoEscolhida == 1:
-            #wifi()
-            appuifw.note(u"Vou me conectar por wifi" , "info")
-        elif conexaoEscolhida == 2:
-            #gprs()
-            appuifw.note(u"Vou me conectar por gprs" , "info")
-        elif conexaoEscolhida == 3:
-            self.current_stateMenu = 'menu'
-            #self.draw_stateMenu()
-        del conexaoEscolhida
-
-
-            #self.desconectar()
-
-    def draw_stateJogo(self, current_stateJogo):
-        """Desenha a tela da seleção atual"""
-        self.current_state = current_stateJogo
-        if self.current_state == 'teste':
-            self.event_redraw()
-        elif self.current_stateJogo == 'conectado':
-            self.tela_aguarda_conexoes()
-            
-            #self.jogar()
-
-
-    def callbackJogo(self, event):
-        # Criado para manipular eventos
-        #print event
-        self.draw_stateJogo(self.current_stateJogo)
-
-
-    def tela_aguarda_conexoes(self):
-        print "To dentro de tela_aguarda_conexoes()"
-        self.canvas.clear()
-        lado1 = self.largura_tela/3
-        lado2 = self.altura_tela/5
-        myscreen = Image.new((self.largura_tela,self.altura_tela))
-        myscreen.clear((15,126,0))
-        
-        myscreen.text((lado1,lado2), u"Aguardando Jogadores", fill = RGB_BLACK,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))  
-        print "passei por aki t_a_c"
-        self.canvas.blit(myscreen) # show the image on the screen
-        
-        '''Desenha um retangulo lilaz e o texto'''
-        myscreen.rectangle(((10+lado1,10+lado2), (10+2*lado1,(2*lado2)+10)), fill=RGB_PURPLE, width=5)
-        myscreen.text((20+lado1,lado2+45), u"Mandar msg", fill = RGB_BLACK,font=(u'Nokia Hindi S60',10,appuifw.STYLE_BOLD))  
-        '''Vincula a função TAP ao retangulo Lilas'''
-        self.canvas.bind(key_codes.EButton1Up, self.enviaPosicao, ((10+lado1,10+lado2), (10+2*lado1,(2*lado2)+10)))
-        
-        pos = 35
-        while self.conexao.is_connected():
-            print "aguardando o comando"
-            myscreen.text((lado1+10,lado2+30), u"Aguardando um comando", fill = RGB_BLACK,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))
-            self.canvas.blit(myscreen)
-            self.conexao.send_command("Entrei no Jogooo!! wan")
-            data = self.conexao.recebe_comando()
-            print "Vou imprimir o q recebi: %s" % data
-            myscreen.text((lado1+10,lado2+pos), u"%s" % data, fill = RGB_BLACK,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))
-            self.canvas.blit(myscreen)
-            pos += 5
-            #appuifw.note(u"%s" % data)
-
-
-    def desenha_botoes(self):
-        self.canvas.clear()
-        lado1 = self.largura_tela/3
-        lado2 = self.altura_tela/5
-        
-        myscreen = Image.new((self.largura_tela,self.altura_tela))
-        myscreen.clear((15,126,0))
-
-        # Retangulo Lilas - TAP Event
-        '''Desenha um retangulo lilaz e o texto'''
-        myscreen.rectangle(((10+lado1,10+lado2), (10+2*lado1,(2*lado2)+10)), fill=RGB_PURPLE, width=5)
-        myscreen.text((20+lado1,lado2+45), u"Mandar msg", fill = RGB_BLACK,font=(u'Nokia Hindi S60',10,appuifw.STYLE_BOLD))  
-        '''Vincula a função TAP ao retangulo Lilas'''
-        self.canvas.bind(key_codes.EButton1Up, self.enviaPosicao, ((10+lado1,10+lado2), (10+2*lado1,(2*lado2)+10)))
-
-        # Retangulo Azul - Evento DOWN
-        '''Desenha um retangulo azul e o texto'''
-        myscreen.rectangle(((5,5), (5+lado1,5+lado2)), fill=RGB_BLUE, width=5)
-        myscreen.text((20,40), u"Envia texto", fill = RGB_BLACK,font=(u'Nokia Hindi S60',10,appuifw.STYLE_BOLD)) 
-        '''Vincula a função DOWN ao retangulo azul'''
-        self.canvas.bind(key_codes.EButton1Down, self.enviaTexto, ((5,5), (lado1,lado2)))
-
-        # Retangulo Vermelho - DRAG Event
-        '''Desenha um retangulo vermelho e o texto'''
-        myscreen.rectangle(((5,10+lado2), (5+lado1,(2*lado2)+10)), fill=RGB_RED, width=5)
-        myscreen.text((20,lado2+45), u"Desconectar", fill = RGB_BLACK,font=(u'Nokia Hindi S60',10,appuifw.STYLE_BOLD))  
-        '''Vincula a função DRAG ao retangulo vermelho'''
-        self.canvas.bind(key_codes.EDrag, self.desconectar, ((5,10+lado2), (5+lado1,(2*lado2)+10)))
-        
-        self.canvas.blit(myscreen) # show the image on the screen
-
-        while self.conexao.is_connected():
-            data = self.conexao.recebe_comando()
-            appuifw.note(u"%s" % data)
-
-    def enviaPosicao(self, event):
-        self.conexao.send_command(str(event))
-
-
-    def desconectar(self, event):
-        txtDescon = "sair"
-        self.conexao.send_command(txtDescon)
-        self.disconnect()
-        self.canvas.clear()
-        self.reset()
-
-    def enviaTexto(self, event):
-        txtEnviar = "s"
-        self.conexao.send_command(txtEnviar)
-
-
-    #Redraw function, used as a callback for canvas events.
-     
-
-    def event_redraw(self, other):
-        
-        #self.desenha_botoes()
-        #self.tela_aguarda_conexoes()
-        print "event_redraw"
-        """
-        try:
-            if self.conexao.is_connected():
-                self.tela_aguarda_conexoes()
-                
-            print "Ta conectado?"
-            print self.conexao.is_connected()
-            print "Tem certeza??"
-            print self.conexao.socket
-                
-        except:
-        """
-        self.canvas.clear()
-        lado1 = self.largura_tela/3
-        lado2 = self.altura_tela/5
-        myscreen = Image.new((self.largura_tela,self.altura_tela))
-        myscreen.clear((15,126,0))
-        self.canvas.blit(myscreen)
-        #print "event_redraw except"
-        print other
-        
-        try:
-            teste = self.conexao
-            self.tela_aguarda_conexoes()
-        except:
-            print "event_redraw except"
-            
-        
-        
-
-
-
-# *******/Fim****** To vendo agora sobre canvas - em 28/04/11 *****************
-
-
-
-
-# Retirado por conta do teste -> To vendo agora sobre canvas  - em 28/04/11 **
-    def conexoes_old(self): 
-        opcoes_conexoes = [u"Bluetooth", u"WI-FI", u"GPRS", u"Voltar"]
-        conexao = appuifw.popup_menu(opcoes_conexoes, u"Tipo de conexão")
-        if conexao == 0:
-            try:
-                self.conexao = btclient.BluetoothClient()
-                self.connectBT()
-            except Exception, exc:
-                open("E:\\Python\\pytruco\\Meu_error.log", "w").write(traceback.format_exc())
-                raise
-            #appuifw.note(u"Vou me conectar por Bluetooth" , "info")
-            while True:
-                msg = raw_input('Digite aki ->>> ')
-                if len(msg) == 0 or msg == 'x': 
-                    self.conexao.send_command(msg)
-                    print "Tchauuu!"
-                    break
-                self.disconnect()
-                print msg
-
-            print "Falow, Abraço!!"
-            self.disconnect()
-
-
-
-
-            
-        elif conexao == 1:
-            #wifi()
-            appuifw.note(u"Vou me conectar por wifi" , "info")
-        elif conexao == 2:
-            #gprs()
-            appuifw.note(u"Vou me conectar por gprs" , "info")
-        elif conexao == 3:
-            self.current_stateMenu = 'menu'
-            #self.draw_stateMenu()
-        del conexao
-
-
-    def disconnect(self):
-        """Disconnects from the server.
-        """
-        try:
-            self.conexao.close()
-            if self.conexao:
-                print "ainda tinha o socket: %s" % self.conexao
-                del self.conexao
-        except BluetoothError, e:
-            appuifw.note(e.msg, "error")
-
-
-
-    def connectBT(self):
-        """Conecta ao servidor.
-        """
-        try:
-            self.conexao.connect()
-            print "socket dentro de connectBT:"
-            print self.conexao.socket
-        except BluetoothError, e:
-            appuifw.note(u"Erro na execução do Bluetooth %s"%e, "error")
 
 
     def opcoes(self): 
@@ -542,15 +269,328 @@ class Game:
         return sysinfo.display_pixels()
 
 
+        
+
+
+
+
+# *******Inicio****** To vendo agora sobre canvas - em 28/04/11 **************
+
+
+
+
+
+
+
+    def jogar(self):
+        #appuifw.note(u"Inicia a pardida", "info")
+        #self.current_stateMenu = 'menu'
+        #prepare canvas for drawing
+        #
+        
+        #self.canvas=appuifw.Canvas(event_callback=None, #self.callbackJogo,
+        #                           redraw_callback=lambda rect:self.draw_stateJogo(self.current_stateJogo))
+        
+        self.cont = 0
+        self.canvas = appuifw.Canvas(event_callback = None,
+                                     redraw_callback = self.event_redraw)
+        
+        appuifw.app.body = self.canvas
+        
+        appuifw.app.exit_key_handler = self.quit
+        
+        self.current_stateJogo = 'teste'
+        self.conexoes()
+        #appuifw.note(u"Inicia a pardida", "info")
+        
+        
+        
+        #self.tela_aguarda_conexoes()
+
+
+    def conexoes(self): 
+        opcoes_conexoes = [u"Bluetooth", u"WI-FI", u"GPRS", u"Voltar"]
+        conexaoEscolhida = appuifw.popup_menu(opcoes_conexoes, u"Tipo de conexão")
+        if conexaoEscolhida == 0:
+            try:
+                print "vai comecar a conexao:"
+                self.conexao = btclient.BluetoothClient()
+                print "outra linha de conexao"
+                self.connectBT()
+                print "socket dentro de conexoes:"
+                print self.conexao.socket
+                print "passei pela conexao:"
+                self.current_stateJogo = 'conectado'
+                print "Vou chamar tela_aguarda_conexoes()"
+                
+                self.conexao.send_command("Entrei no Jogooo!! wander - 1")
+                self.tela_aguarda_conexoes("Dentro de cnx")
+            except Exception, exc:
+                open("E:\\Python\\errorTestAplic.log", "w").write(traceback.format_exc())
+                raise
+            #appuifw.note(u"Vou me conectar por Bluetooth" , "info")
+            #self.desenha_botoes()
+
+            print "Falow, Abraço!!"
+
+        elif conexaoEscolhida == 1:
+            #wifi()
+            appuifw.note(u"Vou me conectar por wifi" , "info")
+        elif conexaoEscolhida == 2:
+            #gprs()
+            appuifw.note(u"Vou me conectar por gprs" , "info")
+        elif conexaoEscolhida == 3:
+            self.current_stateMenu = 'menu'
+            #self.draw_stateMenu()
+        del conexaoEscolhida
+
+
+            #self.desconectar()
+
+    def draw_stateJogo(self, current_stateJogo):
+        """Desenha a tela da seleção atual"""
+        self.current_state = current_stateJogo
+        if self.current_state == 'teste':
+            self.event_redraw()
+        elif self.current_stateJogo == 'conectado':
+            self.tela_aguarda_conexoes()
+            
+            #self.jogar()
+
+
+    def callbackJogo(self, event):
+        # Criado para manipular eventos
+        #print event
+        self.draw_stateJogo(self.current_stateJogo)
+
+    
+    def tela_aguarda_conexoes(self, controle=None):
+        self.cont
+        print "To dentro de tela_aguarda_conexoes()"
+        self.canvas.clear()
+        lado1 = self.largura_tela/3
+        lado2 = self.altura_tela/5
+        myscreen = Image.new((self.largura_tela,self.altura_tela))
+        myscreen.clear((15,126,0))
+        
+        if controle:
+            myscreen.text((lado1-10,lado2+140), u"Chamada direta: %s" % controle , fill = RGB_RED,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))  
+            self.canvas.blit(myscreen)
+        
+        myscreen.text((lado1,lado2), u"Aguardando Jogadores", fill = RGB_BLACK,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))  
+        print "passei por aki t_a_c"
+        
+        #Texto de controde de vezes q passa
+        myscreen.text((lado1,lado2+120), u"Essa é a %s vez que passo aki" % self.cont, fill = RGB_RED,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))  
+        self.canvas.blit(myscreen)
+        self.cont += 1
+        
+        if self.conexao.is_connected():
+            # Retangulo Vermelho - DRAG Event
+            '''Desenha um retangulo vermelho e o texto'''
+            myscreen.rectangle(((5,10+lado2), (5+lado1,(2*lado2)+10)), fill=RGB_RED, width=5)
+            myscreen.text((20,lado2+45), u"Desconectar", fill = RGB_BLACK,font=(u'Nokia Hindi S60',10,appuifw.STYLE_BOLD))  
+            '''Vincula a função DRAG ao retangulo vermelho'''
+            self.canvas.bind(key_codes.EButton1Up, self.desconectar, ((5,10+lado2), (5+lado1,(2*lado2)+10)))
+            
+            # Retangulo Lilas - TAP Event
+            '''Desenha um retangulo lilaz e o texto'''
+            myscreen.rectangle(((10+lado1,10+lado2), (10+2*lado1,(2*lado2)+10)), fill=RGB_PURPLE, width=5)
+            myscreen.text((20+lado1,lado2+45), u"Mandar msg", fill = RGB_BLACK,font=(u'Nokia Hindi S60',10,appuifw.STYLE_BOLD))  
+            '''Vincula a função TAP ao retangulo Lilas'''
+            self.canvas.bind(key_codes.EButton1Up, self.enviaPosicao, ((10+lado1,10+lado2), (10+2*lado1,(2*lado2)+10)))
+
+            
+            self.canvas.blit(myscreen)
+        
+        
+        pos = 115
+        while self.conexao.is_connected():
+            print "aguardando o comando"
+            myscreen.text((lado1+10,lado2+130), u"Aguardando um comando", fill = RGB_BLACK,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))
+            self.canvas.blit(myscreen)
+            
+            self.conexao.send_command("Entrei no Jogooo!! wander - 2")
+            data = self.conexao.recebe_comando()
+            print "Vou imprimir o q recebi: %s" % data
+            myscreen.text((lado1+10,lado2+pos), u"%s" % data, fill = RGB_BLACK,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))
+            self.canvas.blit(myscreen)
+            pos += 15
+            #appuifw.note(u"%s" % data)
+
+
+    def desenha_botoes(self):
+        self.canvas.clear()
+        lado1 = self.largura_tela/3
+        lado2 = self.altura_tela/5
+        
+        myscreen = Image.new((self.largura_tela,self.altura_tela))
+        myscreen.clear((15,126,0))
+
+        # Retangulo Lilas - TAP Event
+        '''Desenha um retangulo lilaz e o texto'''
+        myscreen.rectangle(((10+lado1,10+lado2), (10+2*lado1,(2*lado2)+10)), fill=RGB_PURPLE, width=5)
+        myscreen.text((20+lado1,lado2+45), u"Mandar msg", fill = RGB_BLACK,font=(u'Nokia Hindi S60',10,appuifw.STYLE_BOLD))  
+        '''Vincula a função TAP ao retangulo Lilas'''
+        self.canvas.bind(key_codes.EButton1Up, self.enviaPosicao, ((10+lado1,10+lado2), (10+2*lado1,(2*lado2)+10)))
+
+        # Retangulo Azul - Evento DOWN
+        '''Desenha um retangulo azul e o texto'''
+        myscreen.rectangle(((5,5), (5+lado1,5+lado2)), fill=RGB_BLUE, width=5)
+        myscreen.text((20,40), u"Envia texto", fill = RGB_BLACK,font=(u'Nokia Hindi S60',10,appuifw.STYLE_BOLD)) 
+        '''Vincula a função DOWN ao retangulo azul'''
+        self.canvas.bind(key_codes.EButton1Down, self.enviaTexto, ((5,5), (lado1,lado2)))
+
+        # Retangulo Vermelho - DRAG Event
+        '''Desenha um retangulo vermelho e o texto'''
+        myscreen.rectangle(((5,10+lado2), (5+lado1,(2*lado2)+10)), fill=RGB_RED, width=5)
+        myscreen.text((20,lado2+45), u"Desconectar", fill = RGB_BLACK,font=(u'Nokia Hindi S60',10,appuifw.STYLE_BOLD))  
+        '''Vincula a função DRAG ao retangulo vermelho'''
+        self.canvas.bind(key_codes.EDrag, self.desconectar, ((5,10+lado2), (5+lado1,(2*lado2)+10)))
+        
+        self.canvas.blit(myscreen) # show the image on the screen
+
+        while self.conexao.is_connected():
+            data = self.conexao.recebe_comando()
+            appuifw.note(u"%s" % data)
+
+    def enviaPosicao(self, event):
+        self.conexao.send_command(str(event))
+
+
+    def desconectar(self, event):
+        txtDescon = "sair"
+        print txtDescon
+        self.conexao.send_command(txtDescon)
+        self.disconnect()
+        
+        #self.canvas.clear()
+        #self.reset()
+
+    def enviaTexto(self, event):
+        txtEnviar = "s"
+        self.conexao.send_command(txtEnviar)
+
+
+    #Redraw function, used as a callback for canvas events.
+     
+
+    def event_redraw(self, other):
+        
+        #self.desenha_botoes()
+        #self.tela_aguarda_conexoes()
+        print "event_redraw"
+        """
+        try:
+            if self.conexao.is_connected():
+                self.tela_aguarda_conexoes()
+                
+            print "Ta conectado?"
+            print self.conexao.is_connected()
+            print "Tem certeza??"
+            print self.conexao.socket
+                
+        except:
+        """
+        self.canvas.clear()
+        lado1 = self.largura_tela/3
+        lado2 = self.altura_tela/5
+        myscreen = Image.new((self.largura_tela,self.altura_tela))
+        myscreen.clear((15,126,0))
+        self.canvas.blit(myscreen)
+        #print "event_redraw except"
+        print other
+        
+        try:
+            teste = self.conexao.is_connected()
+            self.tela_aguarda_conexoes()
+        except:
+            print "event_redraw except"
+            
+        
+        
+
+
+
+# *******/Fim****** To vendo agora sobre canvas - em 28/04/11 *****************
+
+
+
+
+# Retirado por conta do teste -> To vendo agora sobre canvas  - em 28/04/11 **
+    def conexoes_old(self): 
+        opcoes_conexoes = [u"Bluetooth", u"WI-FI", u"GPRS", u"Voltar"]
+        conexao = appuifw.popup_menu(opcoes_conexoes, u"Tipo de conexão")
+        if conexao == 0:
+            try:
+                self.conexao = btclient.BluetoothClient()
+                self.connectBT()
+            except Exception, exc:
+                open("E:\\Python\\pytruco\\Meu_error.log", "w").write(traceback.format_exc())
+                raise
+            #appuifw.note(u"Vou me conectar por Bluetooth" , "info")
+            while True:
+                msg = raw_input('Digite aki ->>> ')
+                if len(msg) == 0 or msg == 'x': 
+                    self.conexao.send_command(msg)
+                    print "Tchauuu!"
+                    break
+                self.disconnect()
+                print msg
+
+            print "Falow, Abraço!!"
+            self.disconnect()
+
+
+
+
+            
+        elif conexao == 1:
+            #wifi()
+            appuifw.note(u"Vou me conectar por wifi" , "info")
+        elif conexao == 2:
+            #gprs()
+            appuifw.note(u"Vou me conectar por gprs" , "info")
+        elif conexao == 3:
+            self.current_stateMenu = 'menu'
+            #self.draw_stateMenu()
+        del conexao
+
+
+    def disconnect(self):
+        """Disconnects from the server.
+        """
+        try:
+            self.conexao.close()
+            if self.conexao:
+                print "ainda tinha o socket: %s" % self.conexao
+                del self.conexao
+        except BluetoothError, e:
+            appuifw.note(e.msg, "error")
+
+
+
+    def connectBT(self):
+        """Conecta ao servidor.
+        """
+        try:
+            self.conexao.connect()
+            print "socket dentro de connectBT:"
+            print self.conexao.socket
+        except BluetoothError, e:
+            appuifw.note(u"Erro na execução do Bluetooth %s"%e, "error")
+
+
+
 
     #Exit function
     def quit(self):
         print "Sairrrr"
         self.running = -1
-        #if self.bt != None:
-        #    print u'EXIT'
-        #    self.bt.write_line(u'CONN_CLOSE')
-        #    self.bt.close()
+        if self.conexao != None:
+            print u'EXIT'
+            self.conexao.send_command(u'CONN_CLOSE')
+            self.conexao.close()
         #lock = e32.Ao_lock() 
         #self.lock.signal()
         #appuifw.app.set_exit() #TODO:Voltar essa linha quando for compilar para SIS.
@@ -558,10 +598,197 @@ class Game:
 
 
 
+class Jogar:
+    def __init__(self):
+        self.cont = 0
+        self.render=0
+        self.running = 0
+        self.largura_tela,self.altura_tela = self.screen_size()
+        self.myscreen = Image.new((self.largura_tela,self.altura_tela))
+        self.canvas = appuifw.Canvas(event_callback = None,
+                                     redraw_callback = self.event_redraw)
+        
+        appuifw.app.body = self.canvas
+        appuifw.app.exit_key_handler = self.quit
+        self.render=1
+
+
+    def conexoes(self): 
+        opcoes_conexoes = [u"Bluetooth", u"WI-FI", u"GPRS", u"Voltar"]
+        conexaoEscolhida = appuifw.popup_menu(opcoes_conexoes, u"Tipo de conexão")
+        if conexaoEscolhida == 0:
+            try:
+                self.conexao = btclient.BluetoothClient()
+                self.connectBT()
+                self.current_stateJogo = 'conectado'            
+                self.tela_aguarda_conexoes()
+            except Exception, exc:
+                open("E:\\Python\\errorTestAplic.log", "w").write(traceback.format_exc())
+                raise
+
+        elif conexaoEscolhida == 1:
+            #wifi()
+            appuifw.note(u"Vou me conectar por wifi" , "info")
+        elif conexaoEscolhida == 2:
+            #gprs()
+            appuifw.note(u"Vou me conectar por gprs" , "info")
+        elif conexaoEscolhida == 3:
+            self.current_stateMenu = 'menu'
+            #self.draw_stateMenu()
+        del conexaoEscolhida
+
+
+    def connectBT(self):
+        """Conecta ao servidor.
+        """
+        try:
+            self.conexao.connect()
+            print "socket dentro de connectBT:"
+            print self.conexao.socket
+        except BluetoothError, e:
+            appuifw.note(u"Erro na execução do Bluetooth %s"%e, "error")
 
 
 
+    def tela_aguarda_conexoes(self):
+        self.cont += 1
+        #self.canvas.clear()
+        lado1 = self.largura_tela/3
+        lado2 = self.altura_tela/5
+        #self.myscreen = Image.new((self.largura_tela,self.altura_tela))
+        #self.myscreen.clear((15,126,0))
+        
+        self.myscreen.text((lado1,lado2), u"Aguardando Jogadores", fill = RGB_BLACK,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))  
+        #Texto de controde de vezes q passa
+        self.myscreen.text((10,40), u"Essa é a %s vez que passo aki" % self.cont, fill = RGB_RED,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))  
+        self.canvas.blit(self.myscreen)      
+        if self.conexao.is_connected():
+            pos = 115
+            #self.conexao.send_command("cmd:qtdJogador")
+            while True:
+                self.myscreen.text((lado1,3*lado2), u"Aguardando comando:", fill = RGB_BLACK,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))
+                self.canvas.blit(self.myscreen)
+                data = self.conexao.recebe_comando()
+                self.myscreen.text((lado1-10,4*lado2), u"Comando Recebido!!", fill = RGB_BLACK,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))
+                self.canvas.blit(self.myscreen)
+                if data == '':
+                    break
+                elif data=='cmd:ehmaiorq1':
+                    self.conexao.send_command("OK:ehmaiorq1")
+                    cmd = self.conexao.recebe_comando()
+                    infoJogadores = cmd.split('|')
+                    self.mostraJogadoresConectados(infoJogadores)
+                elif data=='cmd:primeiro':
+                    self.conexao.send_command("OK:ehprimeiro")
+                    cmd = self.conexao.recebe_comando()
+                    infoJogador = cmd.split(':')
+                    self.desenhaNomeJogador(infoJogador[0], infoJogador[1])
+                elif data.startswith('jogadorcnt:'):
+                    dadosJogadorConectado = data.split(':')
+                    self.desenhaNomeJogador(dadosJogadorConectado[1],dadosJogadorConectado[2])
+                elif data=='iniciaPartida':
+                    self.iniciaPartica()
+                else:
+                    print "Vou imprimir o q recebi: %s" % data
+                    #self.log_file.write("Vou imprimir o q recebi: %s\n" % data)
+                    self.myscreen.text((lado1+10,lado2+pos), u"Recebi: %s" % data, fill = RGB_BLACK,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))
+                    self.canvas.blit(self.myscreen)
+                    pos += 15
+                    #appuifw.note(u"%s" % data)
+
+
+    def mostraJogadoresConectados(self, infoJogadores):
+        pos = 0
+        for infoJoagdor in infoJogadores:
+            dadosJogador = infoJoagdor.split(':')
+            self.desenhaNomeJogador(dadosJogador[0], dadosJogador[1])
+            
+            
+            
+
+    def desenhaNomeJogador(self, nome, pos):
+        bordaDir = self.largura_tela - 30
+        bordaEsq = 30
+        bordaTop = 30
+        bordaPe = self.altura_tela - 30
+        meioH = self.largura_tela / 2
+        meioV = self.altura_tela / 2
+        
+        if pos == '0':
+            self.myscreen.text((bordaPe,meioH), u"%s" % nome, fill = RGB_BLACK,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))
+        elif pos =='1':
+            self.myscreen.text((bordaEsq,meioV), u"%s" % nome, fill = RGB_BLUE,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))
+        elif pos == '2':
+            self.myscreen.text((bordaTop,meioH), u"%s" % nome, fill = RGB_RED,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))
+        elif pos =='3':
+            self.myscreen.text((bordaDir,meioV), u"%s" % nome, fill = RGB_PURPLE,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))
+        
+        self.canvas.blit(self.myscreen)
+            
+
+
+    def event_redraw(self, other):
+        print "event_redraw"
+        if self.render == 0:
+            self.canvas.clear()
+            lado1 = self.largura_tela/3
+            lado2 = self.altura_tela/5
+            
+            self.myscreen.clear((15,126,0))
+            self.canvas.blit(self.myscreen)
+        try:
+            teste = self.conexao.is_connected()
+            self.tela_aguarda_conexoes()
+        except Exception, exc:
+            open("E:\\Python\\pytruco\\Meu_error.log", "w").write(traceback.format_exc())
+            print "event_redraw except"
+
+
+    #TODO:
+    def iniciaPartica(self):
+        pass
 
 
 
+    def enviaPosicao(self, event):
+        self.conexao.send_command(str(event))
+
+
+    def desconectar(self, event):
+        txtDescon = "sair"
+        print txtDescon
+        self.conexao.send_command(txtDescon)
+        self.disconnect()
+
+
+    def disconnect(self):
+        """Disconnects from the server.
+        """
+        try:
+            self.conexao.close()
+            if self.conexao:
+                print "ainda tinha o socket: %s" % self.conexao
+                #self.log_file.write("ainda tinha o socket: %s\n" % self.conexao)
+                del self.conexao
+        except BluetoothError, e:
+            appuifw.note(e.msg, "error")
+
+
+
+    #Exit function
+    def quit(self):
+        print "Sairrrr"
+        self.running = -1
+        if self.conexao != None:
+            print u'EXIT'
+            #self.log_file.write("EXIT\n")
+            self.conexao.send_command(u'sair')
+            self.conexao.close()
+            #self.log_file.close() 
+        
+
+
+    #Função Auxiliar, retorna o tamanho da tela
+    def screen_size(self):
+        return sysinfo.display_pixels()
 
