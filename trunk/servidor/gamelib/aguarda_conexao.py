@@ -18,6 +18,8 @@ import constantes
 from jogador import JogadorBT, GerenciaJogadores
 from conexao import ConexaoBT
 from bg_layer import BGLayer
+import janela_erros
+
 
 
 class MenuIniciaPartida(Menu):
@@ -89,13 +91,9 @@ class TelaConexoes(cocos.layer.Layer):
         
         self.jogadores = []
         if self.tipo_conexao == 'bluetooth':
-            try:
-                self.conexao = ConexaoBT()
-                self.conexao.socket_servidor()
-            except:
-                print "Erro com o dispositivo de bluetooth"
-            else:
-                self.conecta_jogadoresBT()
+            self.conexao = ConexaoBT()
+            self.conexao.socket_servidor()
+            self.conecta_jogadoresBT()
         else:
             socket = None
         self.nrJogador=0
@@ -112,24 +110,6 @@ class TelaConexoes(cocos.layer.Layer):
     def obtemJogadores(self):
         return self.gerenteConexao.jogadores
         
-        
-        
-    def conecta_jogadoresBT_old(self):
-        self.nrJogador = 0
-        while not self.partidaIniciada:
-            print "Rodei pela %sa. vez" % self.nrJogador
-            self.jogadores.append(JogadorBT(self.conexao, self.hud, self.nrJogador))
-            self.jogadores[self.nrJogador].setDaemon(True)
-            self.jogadores[self.nrJogador].start()
-            self.nrJogador+=1
-            
-            if len(self.jogadores)==2:
-                self.partidaIniciada = True
-        self.nrJogadores = len(self.jogadores)        
-
-
-
-
 
 
 
@@ -137,13 +117,17 @@ class TelaConexoes(cocos.layer.Layer):
 
 def get_menu_conexao(tipo_conexao):
     scene = Scene()
-    tc = TelaConexoes(tipo_conexao)
+    try:
+        tc = TelaConexoes(tipo_conexao)
+        scene.add(BGLayer("conexao"))
+        scene.add( MultiplexLayer(tc), z=2 )
+        mip = MenuIniciaPartida(tipo_conexao, tc)
+        scene.add( mip, z=0 )
+        return scene
+    except:
+        msgErro =  "Erro com o dispositivo de bluetooth"
+        print msgErro
+        erro = Scene(janela_erros.get_janela(msgErro))
+        return erro
     
-    scene.add(BGLayer("conexao"))
     
-    scene.add( MultiplexLayer(tc), z=2 )
-    
-    mip = MenuIniciaPartida(tipo_conexao, tc)
-    scene.add( mip, z=0 )
-    
-    return scene

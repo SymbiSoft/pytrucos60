@@ -37,11 +37,10 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
     def __init__(self, jogadores): #, tipo_conexao):
         super(Jogo, self).__init__()
         self.nrJogadores=0
-        self.tipo_conexao = 'ooo' #tipo_conexao
         self.partidaIniciada = False
         self.jogadores = jogadores
 
-        print "tipo de conexao => %s " % self.tipo_conexao
+
 
 
         # Configurando camadas
@@ -63,14 +62,19 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
         if self.jogadores == []:
             print "Jogadores veio vazio!"
         else:
+            qtdJogadoresAtivos = len(self.jogadores)
             print "tamanho jogadores:"
-            print len(self.jogadores)
+            print qtdJogadoresAtivos
             for i in self.jogadores:
                 print i
                 print i.nome
                 print i.socket
+                th = Thread(target=self.aguarda_comando, args=(i,))
+                th.setDaemon(True)
+                th.start()
                 i.envia_comando("Bem Vindo ao Jogo!!")
-        
+                
+        """
         qtdJogadoresAtivos = len(self.jogadores)
         print "Vai começar a recepção:"
         
@@ -78,24 +82,37 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
         th.setDaemon(True)
         th.start()
         #Thread(self.aguarda_comando()).start()
+        """
         
         
         
         
         
         
-    def aguarda_comando(self, qtdJogadoresAtivos):
+    def aguarda_comando(self, jogador):
         i = 0
         while True:
-            if i == qtdJogadoresAtivos:
-                i = 0
-            msg = self.jogadores[i].recebe_comando()
-            i += 1
+            msg = jogador.recebe_comando()
+            print "Recebi isso: "
+            print msg
             if msg == "sair":
                 break
+            elif msg.startswith("bcst"):
+                for i in self.jogadores:
+                    self.jogadores[i].envia_comando(msg)
+                
             else:
+                print "Recebi isso mesmo: "
                 print msg
-                self.jogadores[1].envia_comando(msg)
+        
+        
+        jogador.desconecta()
+        self.hud.desconectaJogador()
+        #director.pop()
+        #director.pop()
+        #ou
+        director.scene.end()
+        
 
         """
         
@@ -119,12 +136,6 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
         
         
         
-    def teste_thread(self, tempo, vez):
-        time.sleep(tempo)
-        self.hud.informaJogador("Teste Jogador 1234", vez)
-        self.jogadores.append(tempo)
-        
-        
 
 
 
@@ -146,6 +157,17 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
         director.scene.end()
         director.scene.end()
         
+
+class ComandosJogador(threading.Thread):
+    def __init__ (self, jogador):
+        threading.Thread.__init__(self)
+        self.jogador = jogador
+        
+    def run(self):
+        self.jogador.estahRodando = True
+        print self.jogador.recebe_comando()
+
+
 
 Jogo.register_event_type('on_game_start')   
 Jogo.register_event_type('on_xp_gain')   

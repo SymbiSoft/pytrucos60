@@ -19,6 +19,7 @@ class Audio(object):
         self.player = pyglet.media.Player()
         self.sounds = {}
         self.sfx_volume = config.sfxvolume/10.0
+        self.enable_sound = True
         
     def carrega_som(self, name):
         
@@ -63,8 +64,11 @@ class Audio(object):
         self.music.play()
     def start_music(self):        
         log.info("iniciando a musica")
+
+    def stop_music(self):
+        if(self.enable_sound):
+            self.player.pause()
                  
-        self.music.play()
     def pre_load_sfx(self, sfx_list):
         log.info("pre-cacheado efeitos de som: "+str(sfx_list))
                  
@@ -102,6 +106,14 @@ def play_song(name):
         init_audio()
     
     _audio.play_song(name)
+
+
+def stop_music():
+    global _audio
+
+    if _audio is not None:
+        _audio.stop_music()
+
 
 def next_song():
     global _audio
