@@ -41,9 +41,9 @@ class MenuIniciaPartida(Menu):
 
 
     def inicia_partida(self):
-        qtdJogadoresBT = len(self.tc.obtemJogadores())
+        jogadores = self.tc.obtemJogadores()
+        qtdJogadoresBT = len(jogadores)
         print "qtdJogadoresBT: ", qtdJogadoresBT
-        qtdJogadoresCPU = qtdJogadoresBT-4
         nrJogadorCPU = qtdJogadoresBT
         if qtdJogadoresBT < 4:
             print "eh menor q 4"
@@ -52,10 +52,20 @@ class MenuIniciaPartida(Menu):
                 jogadorCPU = "CPU %s" % nrJogadorCPU
                 self.tc.hud.informaJogador(jogadorCPU , nrJogadorCPU)
                 print "nrJogadorCPU: %s" % nrJogadorCPU
+                for jogador in jogadores:
+                    jogador.envia_comando("cmd:jogadoresconectado")
+                    print jogador.recebe_comando()
+                    cmd = ''
+                    for jogador in jogadores:
+                        cmd += jogadorCPU + ':' + str(nrJogadorCPU) + "|"
+                    for jogador in jogadores:
+                        jogador.envia_comando("%s:" % cmd)
+                        print "comando enviado >> %s:" % cmd
+                    #print jogador.recebe_comando()
+                    
                 nrJogadorCPU += 1
             #time.sleep(10)
-        
-        director.push(Scene (jogo.run(self.tc.obtemJogadores())))
+        director.push(Scene (jogo.run(jogadores)))
 
     def on_quit(self):
         # called by esc
@@ -130,4 +140,16 @@ def get_menu_conexao(tipo_conexao):
         erro = Scene(janela_erros.get_janela(msgErro))
         return erro
     
-    
+    try:
+        tc = TelaConexoes(tipo_conexao)
+        scene.add(BGLayer("conexao"))
+        scene.add( MultiplexLayer(tc), z=2 )
+        mip = MenuIniciaPartida(tipo_conexao, tc)
+        scene.add( mip, z=0 )
+        return scene
+    except:
+        msgErro =  "Erro com o dispositivo de bluetooth"
+        print msgErro
+        erro = Scene(janela_erros.get_janela(msgErro))
+        return erro
+
