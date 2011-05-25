@@ -17,8 +17,8 @@ from cocos.text import *
 #import pygame
 import config
 
-from screen_config import ConfigMenu
-from menu_back import BackMenu
+import screen_config
+import menu_back
 
 import menu_conexoes
 
@@ -53,11 +53,13 @@ class MainMenu( Menu ):
         pass #director.push(Scene (BGLayer("scores"), ScoresLayer(), BackMenu()) )
         
     def on_settings( self ):
-        director.push(Scene (BGLayer("menu"),  ConfigMenu()))
+        director.push(FadeTransition( screen_config.get_scene(), duration = 0.4 ) )
+        #director.push(Scene (BGLayer("menu"),  ConfigMenu()))
         
         
     def on_credits( self ):
-        director.push(Scene (BGLayer("creditos"), BackMenu()) )
+        director.push(FadeTransition( menu_back.get_scene(), duration = 0.4 ) )
+        #director.push(Scene (BGLayer("creditos"), BackMenu()) )
 
     def on_quit(self):
         pyglet.app.exit()
