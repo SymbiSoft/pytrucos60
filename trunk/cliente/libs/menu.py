@@ -138,19 +138,9 @@ class menu:
         return telaMenu
 
 
-
     #Função Auxiliar, retorna o tamanho da tela
     def screen_size(self):
         return sysinfo.display_pixels()
-
-
-
-
-
-
-
-
-
 
     #Exit function
     def quit(self):
@@ -163,30 +153,3 @@ class menu:
         self.lock_menu.signal()
         print "tchau!"
         #appuifw.app.set_exit() #TODO:Voltar essa linha quando for compilar para SIS.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
