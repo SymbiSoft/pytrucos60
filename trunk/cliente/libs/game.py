@@ -667,25 +667,26 @@ class Jogar:
             #self.conexao.send_command("cmd:qtdJogador")
             while True:
                 self.myscreen.text((lado1,3*lado2), u"Aguardando comando:", fill = RGB_BLACK,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))
+                self.myscreen.text((lado1-10,4*lado2), u"Comando Recebido!!", fill = (15,126,0),font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))
                 self.canvas.blit(self.myscreen)
                 data = self.conexao.recebe_comando()
+                self.myscreen.text((lado1,3*lado2), u"Aguardando comando:", fill = (15,126,0),font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))
                 self.myscreen.text((lado1-10,4*lado2), u"Comando Recebido!!", fill = RGB_BLACK,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))
                 self.canvas.blit(self.myscreen)
                 if data == '':
                     break
-                elif data=='cmd:ehmaiorq1':
-                    self.conexao.send_command("OK:ehmaiorq1")
+                elif data=='cmd:jogadoresconectado':
+                    self.conexao.send_command("OK:jogadoresconectado")
                     cmd = self.conexao.recebe_comando()
                     infoJogadores = cmd.split('|')
                     self.mostraJogadoresConectados(infoJogadores)
-                elif data=='cmd:primeiro':
-                    self.conexao.send_command("OK:ehprimeiro")
-                    cmd = self.conexao.recebe_comando()
-                    infoJogador = cmd.split(':')
-                    self.desenhaNomeJogador(infoJogador[0], infoJogador[1])
                 elif data.startswith('jogadorcnt:'):
                     dadosJogadorConectado = data.split(':')
                     self.desenhaNomeJogador(dadosJogadorConectado[1],dadosJogadorConectado[2])
+                elif data.startswith('jogadorcpucnt:'):
+                    self.conexao.send_command("OK:jogadorcpucnt")
+                    dadosJogadorCPU = data.split(':')
+                    self.desenhaNomeJogador(dadosJogadorCPU[1],dadosJogadorCPU[2])
                 elif data=='iniciaPartida':
                     self.iniciaPartica()
                 else:
@@ -693,21 +694,22 @@ class Jogar:
                     #self.log_file.write("Vou imprimir o q recebi: %s\n" % data)
                     self.myscreen.text((lado1+10,lado2+pos), u"Recebi: %s" % data, fill = RGB_BLACK,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))
                     self.canvas.blit(self.myscreen)
-                    pos += 15
+                pos += 15
                     #appuifw.note(u"%s" % data)
 
 
     def mostraJogadoresConectados(self, infoJogadores):
         pos = 0
-        for infoJoagdor in infoJogadores:
-            dadosJogador = infoJoagdor.split(':')
-            self.desenhaNomeJogador(dadosJogador[0], dadosJogador[1])
+        for infoJogador in infoJogadores:
+            dadosJogador = infoJogador.split(':')
+            if dadosJogador!= ['']: 
+                self.desenhaNomeJogador(dadosJogador[0], dadosJogador[1])
             
             
             
 
     def desenhaNomeJogador(self, nome, pos):
-        bordaDir = self.largura_tela - 30
+        bordaDir = self.largura_tela - 190
         bordaEsq = 30
         bordaTop = 30
         bordaPe = self.altura_tela - 30
@@ -715,11 +717,11 @@ class Jogar:
         meioV = self.altura_tela / 2
         
         if pos == '0':
-            self.myscreen.text((bordaPe,meioH), u"%s" % nome, fill = RGB_BLACK,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))
+            self.myscreen.text((meioH, bordaPe), u"%s" % nome, fill = RGB_BLACK,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))
         elif pos =='1':
             self.myscreen.text((bordaEsq,meioV), u"%s" % nome, fill = RGB_BLUE,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))
         elif pos == '2':
-            self.myscreen.text((bordaTop,meioH), u"%s" % nome, fill = RGB_RED,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))
+            self.myscreen.text((meioH,bordaTop), u"%s" % nome, fill = RGB_RED,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))
         elif pos =='3':
             self.myscreen.text((bordaDir,meioV), u"%s" % nome, fill = RGB_PURPLE,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))
         
@@ -746,7 +748,12 @@ class Jogar:
 
     #TODO:
     def iniciaPartica(self):
-        pass
+        meioH = self.largura_tela / 2
+        meioV = self.altura_tela / 2
+        #self.canvas.clear()
+        self.myscreen.clear((253,126,0))
+        self.myscreen.text((meioH, meioV), u"Vai começar a Jogatina", fill = RGB_BLACK,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))
+        self.canvas.blit(self.myscreen)
 
 
 
