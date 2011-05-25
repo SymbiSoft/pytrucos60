@@ -1,6 +1,7 @@
 #-*- coding: utf-8 -*-
 
 from cocos.menu import *
+from cocos.scene import Scene
 from cocos.layer import Layer,ColorLayer
 from cocos.director import director
 from pyglet.window import key
@@ -9,6 +10,7 @@ from cocos.sprite import Sprite
 
 import game_audio
 import constantes
+from bg_layer import BGLayer
       
 class ConfigMenu( Menu ):
     def __init__(self):
@@ -107,3 +109,6 @@ class ConfigMenu( Menu ):
     def on_game( self, value ):
         self.arqjogo = value
 
+def get_scene():
+    scene = Scene(BGLayer("menu"), ConfigMenu() )
+    return scene
