@@ -1,6 +1,9 @@
 #-*- coding: utf-8 -*-
 from cocos.director import director
 from cocos.menu import *
+from cocos.scene import Scene
+
+from bg_layer import BGLayer
 
 class BackMenu( Menu ):
 
@@ -24,3 +27,8 @@ class BackMenu( Menu ):
     def on_quit(self):
         # called by esc
         director.scene.end()
+
+
+def get_scene():
+    scene = Scene(BGLayer("menu"), BackMenu() )
+    return scene
