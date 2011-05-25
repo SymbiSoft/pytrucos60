@@ -12,22 +12,22 @@ log.debug("importado")
 
 import cocos
 from cocos.director import director
-from pyglet.event import EventDispatcher
 from cocos.actions import *
-import pyglet
 
-from jogador import JogadorBT
+from pyglet.event import EventDispatcher
+import pyglet
 
 import threading
 from threading import Thread, Timer
+import time
+
+from jogador import JogadorBT
 from hud import Hud
-
 from conexao import ConexaoBT
-
 import game_audio
 
 
-import time
+
 
 
 
@@ -52,7 +52,7 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
                 th.setDaemon(True)
                 th.start()
                 i.envia_comando("Bem Vindo ao Jogo!!")
-                time.sleep(4)
+                time.sleep(2)
                 i.envia_comando("iniciaPartida")
         print "Vai começar a recepção:"
    
