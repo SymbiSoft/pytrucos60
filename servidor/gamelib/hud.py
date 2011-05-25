@@ -119,12 +119,12 @@ class Hud(cocos.layer.Layer):
     def mostraDessenhoTeste(self):
         self.schedule(lambda upJog:self.update_figura())
 
-    def desconectaJogador(self):
-        self.schedule(lambda upJog:self.on_game_over())
+    def desconectaJogador(self, nomeJogador):
+        self.schedule(lambda upJog:self.on_game_over(nomeJogador))
 
 
     def on_gamer_connect(self, nomeJogador):
-        jogador = Label("O Jogador %s se conectou ao servidor" %nomeJogador , font_name='Times New Roman',
+        jogador = Label("O Jogador %s se conectou ao servidor" % nomeJogador, font_name='Times New Roman',
             font_size=25,
             anchor_x='center', anchor_y='center')
         self.add(jogador)
@@ -138,9 +138,9 @@ class Hud(cocos.layer.Layer):
     def on_complete_level(self):
         self.on_good_condition("Level Complete")
         
-    def on_game_over(self):
+    def on_game_over(self, nomeJogador):
         x,y = director.get_window_size()
-        loose = Label("Desconectado!!", font_name='Times New Roman',
+        loose = Label("Jogador %s desconectado!!" % nomeJogador, font_name='Times New Roman',
             font_size=32,
             anchor_x='center', anchor_y='center')
         self.add(loose)
