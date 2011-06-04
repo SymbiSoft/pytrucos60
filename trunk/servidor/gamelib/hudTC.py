@@ -25,9 +25,16 @@ class Hud(cocos.layer.Layer):
         
         #self.add(BGLayer("TEMP_HUD"))
 
-        self.jogador1 = Label("Partida Iniciada", font_name='Times New Roman',
-            font_size=23,
-            x=30, y=560,
+        self.exp = Label("Exp: ", font_name='Times New Roman',
+            font_size=16,
+            x=100, y=500,
+            anchor_x='center', anchor_y='center')
+        self.timer = Label("Time: 0.0 s", font_name='Times New Roman',
+            font_size=16,
+            x=700, y=600)
+        self.jogadores = Label("Aguardando conexao", font_name='Times New Roman',
+            font_size=23, color=(0, 0, 255, 255),
+            x=30, y=600,
             anchor_x='left', anchor_y='top')
 
         self.jogador1 = Label("Jogador 1: ", font_name='Times New Roman',

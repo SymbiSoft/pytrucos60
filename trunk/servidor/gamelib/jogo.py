@@ -21,9 +21,8 @@ import threading
 from threading import Thread, Timer
 import time
 
-from jogador import JogadorBT
+
 from hud import Hud
-from conexao import ConexaoBT
 import game_audio
 
 
@@ -56,9 +55,10 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
                 i.envia_comando("iniciaPartida")
         print "Vai começar a recepção:"
    
-        
+
     def aguarda_comando(self, jogador):
         i = 0
+        print "Jogador [%s] diga alguma coisa: " % jogador.nome
         while True:
             msg = jogador.recebe_comando()
             print "Recebi isso: "
@@ -85,6 +85,12 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
         director.scene.end()
         
 
+
+
+
+
+
+
 class ComandosJogador(threading.Thread):
     def __init__ (self, jogador):
         threading.Thread.__init__(self)
@@ -94,11 +100,6 @@ class ComandosJogador(threading.Thread):
         self.jogador.estahRodando = True
         print self.jogador.recebe_comando()
 
-Jogo.register_event_type('on_game_start')   
-Jogo.register_event_type('on_xp_gain')   
-Jogo.register_event_type('on_game_over')
-Jogo.register_event_type('on_gamer_connect')
-Jogo.register_event_type('on_server_status')
 
 def run(jogadores): #tipo_conexao):
     return Jogo(jogadores) #tipo_conexao)
