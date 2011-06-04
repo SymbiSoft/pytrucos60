@@ -13,7 +13,7 @@ from cocos.layer import *
 from cocos.scenes.transitions import *
 
 import jogo
-from hud import Hud
+from hudTC import Hud
 import constantes
 from jogador import JogadorBT, GerenciaJogadores
 from conexao import ConexaoBT
