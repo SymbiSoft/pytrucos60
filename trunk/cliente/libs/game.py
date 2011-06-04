@@ -117,6 +117,7 @@ class Game:
             self.canvas.bind(key_codes.EButton1Down, self.touch_down_menu_cb, self.menu.touch['buttons'][i] )
             self.canvas.bind(key_codes.EButton1Up, self.touch_up_menu_cb, self.menu.touch['buttons'][i] )
 
+
     def callback(self, event):
         # Criado para manipular eventos
         #print event
