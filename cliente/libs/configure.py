@@ -34,13 +34,11 @@ class configure:
 
 
 
-
-    #Constructor
     def __init__(self,path):
         # Local onde armazenaremos nossos dados e configurações
         self.set_value(self.userpref, 'base_dir', path)
         # Ajuste para "full" se quiser que seja usada toda a tela
-        self.set_value(self.pref,'game_screen', 'full')    #
+        self.set_value(self.pref,'game_screen', 'large')    #
                           # 'large'   # softkeys fica visivel
                           # 'full'    # fica em tela cheia
         # Define o título

@@ -30,7 +30,7 @@ import e32
 import sys
 import os
 
-#PYTRUCOS60_UID = u"ef080808"
+PYTRUCOS60_UID = u"ef0b4099"
 
 PYTRUCOS60_PATH1 = "\\Python\\"
 PYTRUCOS60_PATH2 = "\\Data\\python\\"
@@ -58,8 +58,8 @@ def get_path(app_name):
             return os.path.join(drive, PYTRUCOS60_PATH1)
         elif os.path.isfile(os.path.join(drive, PYTRUCOS60_PATH2, app_name)):
             return os.path.join(drive, PYTRUCOS60_PATH2)
-#        elif os.path.isfile(os.path.join(drive, PYTRUCOS60_PATH3, app_name)):
-#            return os.path.join(drive, PYTRUCOS60_PATH3)
+        elif os.path.isfile(os.path.join(drive, PYTRUCOS60_PATH3, app_name)):
+            return os.path.join(drive, PYTRUCOS60_PATH3)
     return None
 
 
