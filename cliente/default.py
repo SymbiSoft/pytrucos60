@@ -75,6 +75,11 @@ if full_path == None:
 
 sys.path.append(os.path.join(full_path, "gamelib"))
 
+arq_log = open(os.path.join(full_path,'Meu_error2.log'), 'w')
+
+arq_log.close()
+
+
 
 from Pytrucos60 import Pytrucos60
 
