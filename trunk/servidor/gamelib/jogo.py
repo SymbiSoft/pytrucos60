@@ -25,6 +25,7 @@ import time
 from hud import Hud
 import game_audio
 
+from logicaTruco import *
 
 
 
@@ -36,13 +37,31 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
         self.nrJogadores=0
         self.partidaIniciada = False
         self.jogadores = jogadores
+        self.larguraTela, self.alturaTela = director.get_window_size()
+        
+        
         # Configurando camadas
         # HUD
         self.hud = Hud(self)
-        game_audio.next_song()
+        #game_audio.next_song()
         self.add(self.hud, z=-1)
         self.do(Delay(3) +CallFunc(self.dispatch_event,'on_game_start') )
-        game_audio.play_song('music_background1.ogg')
+        #game_audio.play_song('music_background1.ogg')
+        self.baralho = Baralho()
+        
+        rectSprites = self.baralho.cartas[0].imagem.get_rect()
+        self.alturaCarta=rectSprites.height
+        self.larguraCarta=rectSprites.width
+        
+        
+        self.mesa = Mesa(self.jogadores, self.baralho)
+        
+        self.iniciaPartida()
+        
+        
+
+        
+        """
         if self.jogadores == []:
             print "Jogadores veio vazio!"
         else:
@@ -54,7 +73,77 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
                 time.sleep(2)
                 i.envia_comando("iniciaPartida")
         print "Vai começar a recepção:"
-   
+       """
+       
+    def iniciaPartida(self):
+        self.baralho.embaralhar()
+        self.mesa.definirEquipes()
+        self.mesa.definirOrdemJogadores()
+        
+        
+        for equipe in self.mesa.equipes:
+            print "Equipe: %s - Jogador: %s" % (equipe, equipe.jogadores[0].nome)
+            equipe.jogadores[0].setNumero(1)
+            print "Número: %s - Num. Equipe: %s" % (equipe.jogadores[0].getNumero(),equipe.jogadores[0].getEquipe())
+            
+        for equipe in self.mesa.equipes:
+            print "Equipe: %s - Jogador: %s" % (equipe, equipe.jogadores[1].nome)
+            equipe.jogadores[1].setNumero(2)
+            print "Número: %s - Num. Equipe: %s" % (equipe.jogadores[1].getNumero(),equipe.jogadores[1].getEquipe())
+            
+            
+        self.mesa.distrubuirCartas()
+        self.partidaIniciada = True
+        
+
+        for jogador in self.jogadores:
+            self.hud.desenhaJogadores(jogador.getNumero(), jogador.getEquipe(),jogador.nome)
+            self.desenhaCartasJogadores(jogador)
+        
+        
+       
+       
+    def desenhaCartasJogadores(self, jogador):
+        print "Jogador - %s:" % jogador.nome
+        print "Número: %s Equipe: %s" % (jogador.getNumero(), jogador.getEquipe())
+        
+        self.alturaTela 
+        self.larguraTela
+        
+        self.alturaCarta
+        self.larguraCarta
+        
+        
+        if jogador.getEquipe() == 1:
+            pos1 = (self.larguraTela/2) - self.larguraCarta
+            if jogador.getNumero() == 1:
+                pos2 = self.alturaTela-100
+            elif jogador.getNumero() == 2:
+                pos2 = self.alturaCarta/2
+        elif jogador.getEquipe() == 2:
+            pos2 = self.alturaTela/2
+            if jogador.getNumero() == 1:
+                pos1 = self.larguraTela - (5*self.larguraCarta)/2
+            elif jogador.getNumero() == 2:
+                pos1 = self.larguraCarta/2
+                
+        for carta in jogador.mao:        
+            print "Carta: %s - Posicao: (%s,%s)" % (carta, pos1, pos2)
+            
+            carta.imagem.position = pos1, pos2
+            self.add(carta.imagem, z=1 )
+            pos1 += self.larguraCarta
+       
+       
+    def animaDistribuirCartas(self, jogador):
+       pass
+       
+       
+       
+    def desenhaMesaJogo(self):
+       pass
+
+
 
     def aguarda_comando(self, jogador):
         i = 0
@@ -86,7 +175,11 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
         
 
 
-
+Jogo.register_event_type('on_game_start')   
+Jogo.register_event_type('on_xp_gain')   
+Jogo.register_event_type('on_game_over')
+Jogo.register_event_type('on_gamer_connect')
+Jogo.register_event_type('on_server_status')
 
 
 
@@ -108,3 +201,4 @@ if __name__ == '__main__':
 
     director.init(width=640, height=480, do_not_scale=True)    
     director.run(run())
+    
