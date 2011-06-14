@@ -20,7 +20,7 @@ from telaConexoes import TelaConexoes
 class Conexao:
     def __init__(self):
         self.render=0
-        self.arq_erro = open('E:\\Python\\pytruco\\Meu_error2.log', 'r+')
+        self.arq_erro = open('E:\\Python\\Meu_error2.log', 'r+')
         self.tela_aguarda_conexoes = TelaConexoes()
         self.canvas = appuifw.Canvas(event_callback = None,
                                      redraw_callback = self.event_redraw)

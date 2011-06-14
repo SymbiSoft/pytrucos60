@@ -47,13 +47,17 @@ class TelaConexoes:
         # Desenha botaozinho para cancelar e sair
         self.tela_conexao.rectangle(((5,self.altura_tela - 30), (45,self.altura_tela - 5)), fill=RGB_BLUE, width=5)
         self.tela_conexao.text((7,self.altura_tela - 8), u"Cancelar", fill = RGB_BLACK,font=(u'Nokia Hindi S60',15,appuifw.STYLE_BOLD)) 
-        #self.canvas.bind(key_codes.EButton1Down, self.cancelaConexoes, ((5,self.altura_tela - 30), (45,self.altura_tela - 5)))
         
-        self.canvas.blit(self.tela_conexao)      
+        self.canvas.blit(self.tela_conexao)
+        
         if self.conexao.esta_conectado():
             pos = 115
             while True:
-                data = self.conexao.recebe_comando()
+                try:
+                    data = self.conexao.recebe_comando()
+                except:
+                    break
+                    
                 if data == '':
                     break
                 elif data=='cmd:jogadoresconectado':
@@ -78,6 +82,9 @@ class TelaConexoes:
                     self.canvas.blit(self.tela_conexao)
                 pos += 15
                 
+    def cancelaConexoes(self, event):
+        self.conexao.fechar()
+
 
     def mostraJogadoresConectados(self, infoJogadores):
         pos = 0

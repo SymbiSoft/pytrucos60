@@ -70,7 +70,9 @@ class Pytrucos60:
             #try:
             self.grt_conexao = Conexao()
             self.conexao = self.grt_conexao.definir_conexao()
+            self.canvas.bind(key_codes.EButton1Down, self.restart, ((5,self.altura_tela - 30), (45,self.altura_tela - 5)))
             self.grt_conexao.carrega_tela_aguarda_conexoes()
+
             self.jogo = Jogo(self.conexao)
             self.jogo.mostra_cartas()
             
@@ -143,6 +145,12 @@ class Pytrucos60:
             self.canvas.bind(key_codes.EButton1Down, self.telaInstrucoes.toque_down, i )
             self.canvas.bind(key_codes.EButton1Up, self.toque_up, i )
    
+
+    def restart(self, evento):
+        print "aceitou o clique"
+        self.conexao.fechar()
+        self.resetar()
+        print "passou por todos os metodos ao fechar"
 
 
 
