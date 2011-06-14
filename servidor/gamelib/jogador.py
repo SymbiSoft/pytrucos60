@@ -11,19 +11,51 @@ Created on Mar 03, 2011
 import threading
 import time
 
-class Jogador:
+class Jogador(object):
     """Objeto Jogador
     """
-    def __init__(self, tipo_conexao, conexao, hud ):
-        self.nome = "Jogador"
-        self.cartasMao = []
-        self.equipe = None
-        self.tipo_conexao = tipo_conexao
-        self.ehRemoto = False
-        self.conexao = conexao 
-        self.hud = hud
-        self.sock = None
-        self.info = None
+    nome = None
+    __numero = None
+    mao = []
+    __equipe = None
+    __pontos = 0
+    tipo_conexao = ""
+    ehRemoto = False
+    sock = None
+    info = None
+    
+    def setPontos(self, pontos):
+        self.__pontos = pontos
+    
+    def getPontos(self):
+        return self.__pontos
+
+    def setEquipe(self, equipe):
+        self.__equipe = equipe
+    
+    def getEquipe(self):
+        return self.__equipe 
+    
+    def setNumero(self, numero):
+        self.__numero = numero
+
+    def getNumero(self):
+        return self.__numero 
+
+    def  limparCartas(self):
+        self.mao = []
+
+    def receberCarta(self, carta):
+        self.mao.append(carta)
+
+    def verCartas(self):
+        var = self.mao
+        return var
+
+    def jogarCarta(self, num):
+        var = self.mao[num]
+        self.mao.remove(var)
+        return var
 
 
 
@@ -55,10 +87,10 @@ class GerenciaJogadores(threading.Thread):
             jogadores[self.nrJogador].envia_comando("%s"%cmd)
             for jogador in jogadores:
                 jogador.envia_comando("jogadorcnt:%s:%s" % (jogadores[self.nrJogador].nome, self.nrJogador))
-                print "Enviei jogadorcnt:%s:%s" % (jogadores[self.nrJogador].nome, self.nrJogador)    
+                print "Enviei jogadorcnt:%s:%s" % (jogadores[self.nrJogador].nome, self.nrJogador)
             self.nrJogador+=1
             if len(jogadores)==2:
-                partidaIniciada = True       
+                partidaIniciada = True
         self.nrJogadores = len(jogadores) 
         return jogadores       
 
@@ -86,5 +118,13 @@ class JogadorBT(Jogador):
 
 
 class JogadorCPU(Jogador):
-    def __init__ (self, conexao, sock, info, num):
-        pass
+    def __init__ (self, nome, num):
+        self.numero = num
+        self.nome = nome
+    
+    def envia_comando(self, cmd):
+        print cmd    
+        
+    def recebe_comando(self):
+        return "Nada!"
+    

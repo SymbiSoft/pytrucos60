@@ -59,22 +59,37 @@ class Hud(cocos.layer.Layer):
 
         cocos.actions.FadeOut(0)
 
-        self.add(self.jogadores)
-        self.add(self.jogador1)
-        self.add(self.jogador2)
-        self.add(self.jogador3)
-        self.add(self.jogador4)
-        self.add(self.qtdJogadores)
-        self.add(self.timer)
-        self.start_time = time.time()
-        self.clock = time.time()
-        self.schedule(self.update_time)
+
+        #self.add(self.desenhaJogadores(1,"Wander"))
+        #self.add(self.desenhaJogadores(2,"Marluce"))
+        #self.add(self.desenhaJogadores(3,"Luana"))
+        #self.add(self.desenhaJogadores(4,"Ataide"))
+
+
+
+    def desenhaJogadores(self, numero, equipe, nome):
+        if numero == 1 and equipe == 1:
+            jogador = Label("Jogador: %s" % nome, font_name='Times New Roman',
+            font_size=23,
+            x=400, y=600,
+            anchor_x='center', anchor_y='top')
+        elif numero == 1 and equipe == 2:
+            jogador = Label("Jogador: %s" % nome, font_name='Times New Roman',
+            font_size=23,
+            x=800, y=300,
+            anchor_x='right', anchor_y='top')
+        elif numero == 2 and equipe == 1:
+            jogador = Label("Jogador: %s" % nome, font_name='Times New Roman',
+            font_size=23,
+            x=400, y=2,
+            anchor_x='center', anchor_y='bottom')
+        elif numero == 2 and equipe == 2:
+            jogador = Label("Jogador: %s" % nome, font_name='Times New Roman',
+            font_size=23,
+            x=5, y=300,
+            anchor_x='left', anchor_y='top')
         
-        
-        
-    def update_time(self, dt=0):
-        self.clock = time.time()
-        self.timer.element.text = "Tempo: %0.1f s" % (self.clock-self.start_time)
+        self.add(jogador)
 
     def update_jogador(self, jogador, posicao):
         if posicao == 0:
@@ -98,7 +113,10 @@ class Hud(cocos.layer.Layer):
     def update_QtdJogador(self, qtde):
         self.qtdJogadores.element.text = "Numero de Jogadores conectados: %s" % qtde
 
-
+    
+    def posicionaJogadores(self, posicao, nomeJogador):
+        self.schedule(lambda posJog:self.desenhaJogadores(posicao, nomeJogador))
+    
 
     def informaJogador(self, nomeJogador, posicao):
         self.schedule(lambda upJog:self.update_jogador(nomeJogador,posicao))
@@ -144,6 +162,7 @@ class Hud(cocos.layer.Layer):
         self.exp.element.text = "Exp: %d" % self.game.player.exp
             
     def on_game_start(self):
+        print "teste do start hehehe"
         self.do(FadeIn(2))
         self.on_xp_gain()
         self.start_time = time.time()
