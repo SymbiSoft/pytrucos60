@@ -21,12 +21,13 @@ from telaCreditos import TelaCreditos
 from telaInstrucoes import TelaInstrucoes
 from conexao import Conexao
 from jogo import Jogo
+import util
 
 class Pytrucos60:
     
     def __init__(self):
         appuifw.app.exit_key_handler = self.quit
-        self.lagura_tela, self.altura_tela = self.__getTamanho_tela()
+        self.lagura_tela, self.altura_tela = util.getTamanho_tela()
         #definindo o orientação da tela como paisagens, ou seja a tela deitada.
         appuifw.app.orientation = 'landscape'
         self.configuracao = Configuracoes()
@@ -49,10 +50,7 @@ class Pytrucos60:
         self.menu= Menu()
         self.telaCreditos = TelaCreditos()
         self.telaInstrucoes = TelaInstrucoes()
-        self.resetar()
-
-    def __getTamanho_tela(self):
-        return sysinfo.display_pixels()        
+        self.resetar()      
 
     def resetar(self):
         self.running = 0

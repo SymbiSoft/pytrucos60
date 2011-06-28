@@ -16,13 +16,14 @@ import traceback
 
 import clienteBT
 from constantes import *
+import util
 
 class Jogo:
     def __init__(self, conexao):
         self.render=0
-        file_erro = open('E:\\Python\\pytruco\\Meu_error2.log', 'r+')
+        file_erro = open('E:\\Python\\Meu_error2.log', 'r+')
         self.conexao = conexao
-        self.largura_tela, self.altura_tela = self.__getTamanho_tela()
+        self.largura_tela, self.altura_tela = util.getTamanho_tela()
         self.telajogo = Image.new((self.largura_tela,self.altura_tela))
         
         self.canvas = appuifw.Canvas(event_callback = None,
@@ -30,15 +31,15 @@ class Jogo:
         appuifw.app.body = self.canvas
         self.render=1
 
-
-
-    def __getTamanho_tela(self):
-        return sysinfo.display_pixels() 
-
-
-    def mostra_cartas(self):
-        self.telajogo.text((10, 30), u"Minhas Cartas", fill = RGB_BLACK,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))
+        self.fundoMesa = util.cria_imagem('fundoMesa.png')
+        self.telajogo.blit(self.fundoMesa)
+        # mostra a imagem na tela
         self.canvas.blit(self.telajogo)
+
+
+
+    def mostra_cartas(self):    
+        
         if self.conexao.esta_conectado():
             pos = 95
             while True:

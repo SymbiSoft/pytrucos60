@@ -11,82 +11,50 @@
 
 from graphics import Image
 import sysinfo
-import e32
-import os
 
-IMG_PATH1 = "\\Python\\img\\"
-IMG_PATH2 = "\\Data\\python\\img\\"
-IMG_PATH3 = "\\Private\\ef0b4099\\img\\"
+import util
+
 
 
 class Menu:
     botoes = {}
     
     def __init__(self):
-        self.largura_tela, self.altura_tela = self.__getTamanho_tela()
+        self.largura_tela, self.altura_tela = util.getTamanho_tela()
         try: 
             self.__caregar_imagens()
         except:
             print "Erro ao carregar as imagens!"
-        
-        
-    def __getTamanho_tela(self):
-        return sysinfo.display_pixels()
-
-    def __get_caminho(self, arquivo):
-        drives_list = e32.drive_list()
-        drives_list.reverse()
-        for drive in [str(x) for x in drives_list]:
-            if os.path.isfile(os.path.join(drive, IMG_PATH1, arquivo)):
-                return os.path.join(drive, IMG_PATH1)
-            elif os.path.isfile(os.path.join(drive, IMG_PATH2, arquivo)):
-                return os.path.join(drive, IMG_PATH2)
-            elif os.path.isfile(os.path.join(drive, IMG_PATH3, arquivo)):
-                return os.path.join(drive, IMG_PATH3)
-        return None
 
 
 
     def __caregar_imagens(self):
-        caminho_img = self.__get_caminho('TelaMenu.png')
-        
-        self.fundoMenu=self.__cria_imagem(caminho_img + 'TelaMenu.png')
+        self.fundoMenu=util.cria_imagem('TelaMenu.png')
         
         #Carrega a imagem do botão Jogar. 
-        self.botoes['jogar'] = self.__cria_imagem(caminho_img + 'btn_jogar_off.png')
-        self.botoes['jogar_down'] = self.__cria_imagem(caminho_img + 'btn_jogar_on.png')
+        self.botoes['jogar'] = util.cria_imagem('btn_jogar_off.png')
+        self.botoes['jogar_down'] = util.cria_imagem('btn_jogar_on.png')
          
         #Carrega a imagem do botão Conexões. Se a imagem não existir no diretório, define como vazio.
-        self.botoes['conexao'] = self.__cria_imagem(caminho_img + 'btn_conexao_off.png')
-        self.botoes['conexao_down'] = self.__cria_imagem(caminho_img + 'btn_conexao_on.png')
+        self.botoes['conexao'] = util.cria_imagem('btn_conexao_off.png')
+        self.botoes['conexao_down'] = util.cria_imagem('btn_conexao_on.png')
 
         #Carrega a imagem do botão Conexões. Se a imagem não existir no diretório, define como vazio.
-        self.botoes['opcoes'] = self.__cria_imagem(caminho_img + 'btn_opcoes_off.png')
-        self.botoes['opcoes_down'] = self.__cria_imagem(caminho_img + 'btn_opcoes_on.png')
+        self.botoes['opcoes'] = util.cria_imagem('btn_opcoes_off.png')
+        self.botoes['opcoes_down'] = util.cria_imagem('btn_opcoes_on.png')
 
         #Carrega a imagem do botão Creditos. Se a imagem não existir no diretório, define como vazio.
-        self.botoes['creditos'] = self.__cria_imagem(caminho_img + 'btn_creditos_off.png')
-        self.botoes['creditos_down'] = self.__cria_imagem(caminho_img + 'btn_creditos_on.png')
+        self.botoes['creditos'] = util.cria_imagem('btn_creditos_off.png')
+        self.botoes['creditos_down'] = util.cria_imagem('btn_creditos_on.png')
         
         #Carrega a imagem do botão Instrucoes. Se a imagem não existir no diretório, define como vazio.
-        self.botoes['instrucoes'] = self.__cria_imagem(caminho_img + 'btn_instrucoes_off.png')
-        self.botoes['instrucoes_down'] = self.__cria_imagem(caminho_img + 'btn_instrucoes_on.png')
+        self.botoes['instrucoes'] = util.cria_imagem('btn_instrucoes_off.png')
+        self.botoes['instrucoes_down'] = util.cria_imagem('btn_instrucoes_on.png')
         
         #Carrega a imagem do botão Sair. Se a imagem não existir no diretório, define como vazio.
-        self.botoes['sair'] = self.__cria_imagem(caminho_img + 'btn_sair_off.png')
-        self.botoes['sair_down'] = self.__cria_imagem(caminho_img + 'btn_sair_on.png')
+        self.botoes['sair'] = util.cria_imagem('btn_sair_off.png')
+        self.botoes['sair_down'] = util.cria_imagem('btn_sair_on.png')
 
-
-    def __cria_imagem(self, caminnho):
-        """Carrega imagem referente ao parametro passado. Se a imagem não existir no
-        diretório, retorna vazio.
-        """
-        try:
-            img = Image.open(caminnho)
-            return img
-        except:
-            print "Imagem não encontrada!"
-            return None
 
     def desenha_menu(self, estado_atual, toque):
         self.toque = toque

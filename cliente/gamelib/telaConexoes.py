@@ -13,19 +13,19 @@ import sysinfo
 from graphics import Image
 import appuifw
 import key_codes
+import time
 
 from constantes import *
+import util
 
 class TelaConexoes:
 
     def __init__(self):
-        self.largura_tela, self.altura_tela = self.__getTamanho_tela()
+        self.largura_tela, self.altura_tela = util.getTamanho_tela()
         self.tela_conexao = Image.new((self.largura_tela,self.altura_tela))
         self.tela_conexao.clear((15,126,0))
         
             
-    def __getTamanho_tela(self):
-        return sysinfo.display_pixels()
         
 
 
@@ -73,6 +73,7 @@ class TelaConexoes:
                     dadosJogadorCPU = data.split(':')
                     self.desenhaNomeJogador(dadosJogadorCPU[1],dadosJogadorCPU[2])
                 elif data=='iniciaPartida':
+                    time.sleep(4)
                     self.conexao.envia_comando("OK:iniciaPartida")
                     break
                     #self.iniciaPartica(self.conexao)
@@ -80,7 +81,7 @@ class TelaConexoes:
                     print "Vou imprimir o q recebi: %s" % data
                     self.tela_conexao.text((10,lado2+pos), u"Recebi: %s" % data, fill = RGB_BLACK,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))
                     self.canvas.blit(self.tela_conexao)
-                pos += 15
+                    pos += 15
                 
     def cancelaConexoes(self, event):
         self.conexao.fechar()
