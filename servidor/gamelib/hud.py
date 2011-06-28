@@ -21,6 +21,11 @@ class Hud(cocos.layer.Layer):
         super(Hud, self).__init__()
 
         self.game = jogo
+        self.larguraTela =  jogo.larguraTela
+        self.alturaTela = jogo.alturaTela
+        self.alturaCarta= jogo.alturaCarta
+        self.larguraCarta= jogo.larguraCarta
+        
         #self.game.push_handlers(self.on_gamer_connect, self.on_server_status)#self.on_game_over,  self.on_xp_gain,  self.on_game_win,  self.on_game_start , self.on_complete_level)
         
         #self.add(BGLayer("TEMP_HUD"))
@@ -68,26 +73,32 @@ class Hud(cocos.layer.Layer):
 
 
     def desenhaJogadores(self, numero, equipe, nome):
-        if numero == 1 and equipe == 1:
-            jogador = Label("Jogador: %s" % nome, font_name='Times New Roman',
-            font_size=23,
-            x=400, y=600,
-            anchor_x='center', anchor_y='top')
-        elif numero == 1 and equipe == 2:
-            jogador = Label("Jogador: %s" % nome, font_name='Times New Roman',
-            font_size=23,
-            x=800, y=300,
-            anchor_x='right', anchor_y='top')
-        elif numero == 2 and equipe == 1:
-            jogador = Label("Jogador: %s" % nome, font_name='Times New Roman',
-            font_size=23,
-            x=400, y=2,
-            anchor_x='center', anchor_y='bottom')
-        elif numero == 2 and equipe == 2:
-            jogador = Label("Jogador: %s" % nome, font_name='Times New Roman',
-            font_size=23,
-            x=5, y=300,
-            anchor_x='left', anchor_y='top')
+        
+        if equipe == 1:
+            pos1 = (self.larguraTela/2)
+            ancora_x = 'center'
+            if numero == 1:
+                pos2 = self.alturaTela
+                ancora_y = 'top'
+            elif numero == 2:
+                pos2 = self.alturaCarta + 55
+                ancora_y = 'bottom'
+        elif equipe == 2:
+            pos2 = self.alturaTela/2+self.alturaCarta/2
+            ancora_y = 'bottom'
+            if numero == 1:
+                pos1 = self.larguraTela
+                ancora_x = 'right'
+            elif numero == 2:
+                pos1 = 0
+                ancora_x = 'left'
+                
+        
+              
+        jogador = Label("Jogador: %s" % nome, font_name='Times New Roman',
+        font_size=23,
+        x=pos1, y=pos2,
+        anchor_x=ancora_x, anchor_y=ancora_y)
         
         self.add(jogador)
 

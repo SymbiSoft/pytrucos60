@@ -3,6 +3,7 @@
 
 import time
 import os
+from threading import Thread
 
 import cocos
 from cocos.menu import *
@@ -15,7 +16,7 @@ from cocos.scenes.transitions import *
 import jogo
 from hudTC import Hud
 import constantes
-from jogador import JogadorCPU, GerenciaJogadores
+from jogador import JogadorBT, JogadorCPU, GerenciaJogadores
 from conexao import ConexaoBT
 from bg_layer import BGLayer
 import janela_erros
@@ -41,13 +42,23 @@ class MenuIniciaPartida(Menu):
 
 
     def inicia_partida(self):
+        self.tc.partidaIniciada = True
+        
         jogadores = self.tc.obtemJogadores()
+        
+        qtdJogadoresBT = len(jogadores)
+        if qtdJogadoresBT < 4:
+            print "Socket do jogador que vai ser banido: %s" % str(jogadores[-1].socket)
+            if not jogadores[-1].socket:
+                print "Socket do jogador banido: %s" % jogadores[-1].socket
+                print "Jogador nao inciado: %s" % jogadores.pop()
         
         qtdJogadoresBT = len(jogadores)
         print "qtdJogadoresBT: ", qtdJogadoresBT
         nrJogadorCPU = qtdJogadoresBT
         if qtdJogadoresBT < 4:
             print "eh menor q 4"
+           
             while nrJogadorCPU < 4:
                 print "imprimindo CPUs"
                 jogadorCPU = "CPU %s" % nrJogadorCPU
@@ -57,22 +68,23 @@ class MenuIniciaPartida(Menu):
                 for jogador in jogadores:
                     jogador.envia_comando("cmd:jogadoresconectado")
                     print jogador.recebe_comando()
-                    cmd = ''
-                    for jogador in jogadores:
-                        cmd += jogadorCPU + ':' + str(nrJogadorCPU) + "|"
-                    for jogador in jogadores:
-                        jogador.envia_comando("%s:" % cmd)
-                        print "comando enviado >> %s:" % cmd
+                    
+                    
+                cmd = jogadorCPU + ':' + str(nrJogadorCPU) + "|"
+                for jogador in jogadores:
+                    jogador.envia_comando("%s:" % cmd)
+                    print "comando enviado >> %s:" % cmd
                     #print jogador.recebe_comando()
                 jogadores.append(JogadorCPU(jogadorCPU , nrJogadorCPU))
-                equipe = 1
-                for jogador in jogadores:
-                    jogador.setEquipe(equipe)
-                    equipe += 1
-                    if equipe == 3:
-                        equipe = 1
-                
                 nrJogadorCPU += 1
+
+        equipe = 1
+        for jogador in jogadores:
+            jogador.setEquipe(equipe)
+            equipe += 1
+            if equipe == 3:
+                equipe = 1
+        
         
         print "qtdJogadoresCPU: ", len(jogadores) - qtdJogadoresBT
         print "qtdJogadoresTotais: ", len(jogadores)
@@ -92,6 +104,7 @@ class TelaConexoes(cocos.layer.Layer):
         self.nrJogadores=0
         self.tipo_conexao = tipo_conexao
         self.partidaIniciada = False
+        self.jogadores = []
         
         print "tipo de conexao => %s " % self.tipo_conexao
         
@@ -111,26 +124,53 @@ class TelaConexoes(cocos.layer.Layer):
         self.add(self.titulo)
         
         
-        self.jogadores = []
         if self.tipo_conexao == 'bluetooth':
             self.conexao = ConexaoBT()
             self.conexao.socket_servidor()
-            self.conecta_jogadoresBT()
+            threadConexao = Thread( target=self.conecta_jogadoresBT)
+            threadConexao.start()
         else:
             socket = None
-        self.nrJogador=0
-        
+
     def conecta_jogadoresBT(self):
-        if not self.partidaIniciada:
-            self.gerenteConexao = GerenciaJogadores(self.conexao, self.hud, self.jogadores)
-            self.gerenteConexao.setDaemon(True)
-            self.gerenteConexao.start()
+        nrJogador = 0
+        while not self.partidaIniciada:
             
-            #print gerenteConexao.jogadores
-            #self.partidaIniciada = gerenteConexao.status
+            self.jogadores.append(JogadorBT(self.conexao, nrJogador, self.hud))
+            self.jogadores[nrJogador].setDaemon(True)
+            self.jogadores[nrJogador].start()
+            print self.jogadores[nrJogador]
+            while not self.jogadores[nrJogador].conectou():
+                if self.partidaIniciada:
+                    print "Abortou conexao!!"
+                    break
+            try:
+                self.jogadores[nrJogador].conectou()
+            except IndexError:
+                pass
+            else:
+                if self.jogadores[nrJogador].conectou():
+                    print "Jogador %s Conectado!!!" % self.jogadores[nrJogador].nome
+                    self.jogadores[nrJogador].envia_comando("cmd:jogadoresconectado")
+                    print  self.jogadores[nrJogador].recebe_comando()
+                    
+                    cmd = ''
+                    for jogador in self.jogadores:
+                        cmd += jogador.nome + ':' + str(jogador.numero) + "|"
+                    self.jogadores[nrJogador].envia_comando("%s"%cmd)
+                    for jogador in self.jogadores:
+                        jogador.envia_comando("jogadorcnt:%s:%s" % (self.jogadores[nrJogador].nome, nrJogador))
+                        print "Enviei jogadorcnt:%s:%s" % (self.jogadores[nrJogador].nome, nrJogador)
+                    
+                nrJogador+=1
+                
+                if len(self.jogadores)==4:
+                    self.partidaIniciada = True
+            
+            
             
     def obtemJogadores(self):
-        return self.gerenteConexao.jogadores
+        return self.jogadores
         
 
 
@@ -141,14 +181,19 @@ def get_menu_conexao(tipo_conexao):
     scene = Scene()
     try:
         tc = TelaConexoes(tipo_conexao)
+    except Exception, e:
+        print "Erro em Tela Conexoes"
+        print e
+    try:
         scene.add(BGLayer("conexao"))
         scene.add( MultiplexLayer(tc), z=2 )
         mip = MenuIniciaPartida(tipo_conexao, tc)
         scene.add( mip, z=0 )
         return scene
-    except:
+    except Exception, e:
         msgErro =  "Erro com o dispositivo de bluetooth"
         print msgErro
+        print e
         erro = Scene(janela_erros.get_janela(msgErro))
         return erro
 

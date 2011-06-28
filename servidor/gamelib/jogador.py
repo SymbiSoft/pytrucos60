@@ -23,7 +23,10 @@ class Jogador(object):
     ehRemoto = False
     sock = None
     info = None
-    
+
+    def run(self):
+        self.jogadores = self.conecta_jogadores()
+
     def setPontos(self, pontos):
         self.__pontos = pontos
     
@@ -57,60 +60,56 @@ class Jogador(object):
         self.mao.remove(var)
         return var
 
+    def conecta_jogadores(self):
+        pass
 
 
-class GerenciaJogadores(threading.Thread):
+
+class GerenciaJogadores():
     def __init__ (self, conexao, hud, jogadores):
         threading.Thread.__init__(self)
         self.conexao = conexao
         self.hud = hud
         self.jogadores = []
         
-    def run(self):
-        self.jogadores = self.conecta_jogadores()
+
         
-    def conecta_jogadores(self):
-        partidaIniciada = False
-        self.nrJogador = 0
-        jogadores = []
-        while not partidaIniciada:
-            print "Rodei pela %sa. vez" % self.nrJogador
-            (sock, info) = self.conexao.conectaJogador(self.conexao.socket)
-            jogadores.append(JogadorBT(self.conexao, sock, info, self.nrJogador))
-            print "Iniciei um jogador"
-            self.hud.informaJogador(jogadores[self.nrJogador].nome, self.nrJogador)
-            jogadores[self.nrJogador].envia_comando("cmd:jogadoresconectado")
-            print jogadores[self.nrJogador].recebe_comando()
-            cmd = ''
-            for jogador in jogadores:
-                cmd += jogador.nome + ':' + str(jogador.numero) + "|"
-            jogadores[self.nrJogador].envia_comando("%s"%cmd)
-            for jogador in jogadores:
-                jogador.envia_comando("jogadorcnt:%s:%s" % (jogadores[self.nrJogador].nome, self.nrJogador))
-                print "Enviei jogadorcnt:%s:%s" % (jogadores[self.nrJogador].nome, self.nrJogador)
-            self.nrJogador+=1
-            if len(jogadores)==2:
-                partidaIniciada = True
-        self.nrJogadores = len(jogadores) 
-        return jogadores       
+     
 
 
 
-class JogadorBT(Jogador):
-    def __init__ (self, conexao, sock, info, num):
-        self.socket = sock
-        self.info = info
+class JogadorBT(Jogador, threading.Thread):
+    def __init__ (self, conexao, num, hud):
+        threading.Thread.__init__(self)
+        self.conexao = conexao
         self.numero = num
-        self.nome = conexao.obtem_nome(self.info[0])
         self.estahRodando = False
+        self.hud = hud
+        self.socket = None
         
-        
+    def run(self):
+        self.conecta_jogadores()
+
+
+
+    def conecta_jogadores(self):
+        (self.socket, self.info) = self.conexao.conectaJogador(self.conexao.socket)
+        self.nome = self.conexao.obtem_nome(self.info[0])
+        print "Iniciei um jogador: %s" % self.nome
+        self.hud.informaJogador(self.nome, self.numero)
+
+          
+
     def envia_comando(self, cmd):
         self.socket.send(cmd)    
         
     def recebe_comando(self):
         return self.socket.recv(1024)
-    
+
+    def conectou(self):
+        return self.socket != None
+
+
     def desconecta(self):
         self.socket.close()
         print self.nome, ": desconectado"

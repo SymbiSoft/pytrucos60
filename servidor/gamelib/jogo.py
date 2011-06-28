@@ -39,6 +39,12 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
         self.jogadores = jogadores
         self.larguraTela, self.alturaTela = director.get_window_size()
         
+        self.baralho = Baralho()
+        
+        cartaModelo = self.baralho.cartas[0]
+        rectSprites = cartaModelo.imagem.get_rect()
+        self.alturaCarta=rectSprites.height
+        self.larguraCarta=rectSprites.width
         
         # Configurando camadas
         # HUD
@@ -47,11 +53,7 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
         self.add(self.hud, z=-1)
         self.do(Delay(3) +CallFunc(self.dispatch_event,'on_game_start') )
         #game_audio.play_song('music_background1.ogg')
-        self.baralho = Baralho()
         
-        rectSprites = self.baralho.cartas[0].imagem.get_rect()
-        self.alturaCarta=rectSprites.height
-        self.larguraCarta=rectSprites.width
         
         
         self.mesa = Mesa(self.jogadores, self.baralho)
@@ -76,6 +78,13 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
        """
        
     def iniciaPartida(self):
+        
+        for jogador in self.jogadores:
+            jogador.envia_comando("iniciaPartida")
+        
+        for jogador in self.jogadores:
+            jogador.recebe_comando()
+            
         self.baralho.embaralhar()
         self.mesa.definirEquipes()
         self.mesa.definirOrdemJogadores()
@@ -119,7 +128,7 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
             if jogador.getNumero() == 1:
                 pos2 = self.alturaTela-100
             elif jogador.getNumero() == 2:
-                pos2 = self.alturaCarta/2
+                pos2 = self.alturaCarta/2 + 50
         elif jogador.getEquipe() == 2:
             pos2 = self.alturaTela/2
             if jogador.getNumero() == 1:
