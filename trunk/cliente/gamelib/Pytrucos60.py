@@ -72,7 +72,7 @@ class Pytrucos60:
             self.grt_conexao.carrega_tela_aguarda_conexoes()
 
             self.jogo = Jogo(self.conexao)
-            self.jogo.mostra_cartas()
+            self.jogo.loop_jogo()
             
     
             #except:

@@ -14,6 +14,7 @@ from graphics import Image
 import appuifw
 import key_codes
 import time
+import e32
 
 from constantes import *
 import util
@@ -24,9 +25,6 @@ class TelaConexoes:
         self.largura_tela, self.altura_tela = util.getTamanho_tela()
         self.tela_conexao = Image.new((self.largura_tela,self.altura_tela))
         self.tela_conexao.clear((15,126,0))
-        
-            
-        
 
 
     def tela_aguarda_conexoes(self, canvas, conexao):
@@ -61,6 +59,7 @@ class TelaConexoes:
                 if data == '':
                     break
                 elif data=='cmd:jogadoresconectado':
+                    e32.ao_sleep(1)
                     self.conexao.envia_comando("OK:jogadoresconectado")
                     cmd = self.conexao.recebe_comando()
                     infoJogadores = cmd.split('|')
@@ -73,7 +72,7 @@ class TelaConexoes:
                     dadosJogadorCPU = data.split(':')
                     self.desenhaNomeJogador(dadosJogadorCPU[1],dadosJogadorCPU[2])
                 elif data=='iniciaPartida':
-                    time.sleep(4)
+                    e32.ao_sleep(2)
                     self.conexao.envia_comando("OK:iniciaPartida")
                     break
                     #self.iniciaPartica(self.conexao)
@@ -94,8 +93,6 @@ class TelaConexoes:
             if dadosJogador!= ['']: 
                 self.desenhaNomeJogador(dadosJogador[0], dadosJogador[1])
             
-            
-            
 
     def desenhaNomeJogador(self, nome, pos):
         bordaDir = self.largura_tela - 190
@@ -115,11 +112,3 @@ class TelaConexoes:
             self.tela_conexao.text((bordaDir,meioV), u"%s" % nome, fill = RGB_PURPLE,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))
         
         self.canvas.blit(self.tela_conexao)
-        
-        
-
-        
-        
-        
-        
-    
