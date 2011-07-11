@@ -67,13 +67,12 @@ class MenuIniciaPartida(Menu):
                 
                 for jogador in jogadores:
                     jogador.envia_comando("cmd:jogadoresconectado")
-                    print jogador.recebe_comando()
+                    jogador.recebe_comando()
                     
                     
                 cmd = jogadorCPU + ':' + str(nrJogadorCPU) + "|"
                 for jogador in jogadores:
                     jogador.envia_comando("%s:" % cmd)
-                    print "comando enviado >> %s:" % cmd
                     #print jogador.recebe_comando()
                 jogadores.append(JogadorCPU(jogadorCPU , nrJogadorCPU))
                 nrJogadorCPU += 1
@@ -89,7 +88,9 @@ class MenuIniciaPartida(Menu):
         print "qtdJogadoresCPU: ", len(jogadores) - qtdJogadoresBT
         print "qtdJogadoresTotais: ", len(jogadores)
             #time.sleep(10)
-        director.push(Scene (BGLayer("mesa"),jogo.run(jogadores)))
+        director.push( FadeTransition(jogo.run(jogadores), 1.0 ) )
+        
+        #director.push(Scene (BGLayer("mesa"),jogo.run(jogadores)))
 
     def on_quit(self):
         # called by esc
@@ -140,6 +141,7 @@ class TelaConexoes(cocos.layer.Layer):
             self.jogadores[nrJogador].setDaemon(True)
             self.jogadores[nrJogador].start()
             print self.jogadores[nrJogador]
+            time.sleep(1)
             while not self.jogadores[nrJogador].conectou():
                 if self.partidaIniciada:
                     print "Abortou conexao!!"
@@ -150,6 +152,7 @@ class TelaConexoes(cocos.layer.Layer):
                 pass
             else:
                 if self.jogadores[nrJogador].conectou():
+                    time.sleep(1)
                     print "Jogador %s Conectado!!!" % self.jogadores[nrJogador].nome
                     self.jogadores[nrJogador].envia_comando("cmd:jogadoresconectado")
                     print  self.jogadores[nrJogador].recebe_comando()
@@ -160,7 +163,6 @@ class TelaConexoes(cocos.layer.Layer):
                     self.jogadores[nrJogador].envia_comando("%s"%cmd)
                     for jogador in self.jogadores:
                         jogador.envia_comando("jogadorcnt:%s:%s" % (self.jogadores[nrJogador].nome, nrJogador))
-                        print "Enviei jogadorcnt:%s:%s" % (self.jogadores[nrJogador].nome, nrJogador)
                     
                 nrJogador+=1
                 

@@ -23,6 +23,8 @@ class Jogador(object):
     ehRemoto = False
     sock = None
     info = None
+    vezDeJogar = False
+    ganhadorUltimaRodada = False
 
     def run(self):
         self.jogadores = self.conecta_jogadores()
@@ -101,10 +103,13 @@ class JogadorBT(Jogador, threading.Thread):
           
 
     def envia_comando(self, cmd):
-        self.socket.send(cmd)    
+        self.socket.send(cmd)
+        print "enviei: %s" % cmd
         
     def recebe_comando(self):
-        return self.socket.recv(1024)
+        rec = self.socket.recv(1024)
+        print "recebi: %s" % rec
+        return rec
 
     def conectou(self):
         return self.socket != None
@@ -114,7 +119,14 @@ class JogadorBT(Jogador, threading.Thread):
         self.socket.close()
         print self.nome, ": desconectado"
 
+    def formata_cartas_BT(self):
+        cartaBT = []
+        for carta in self.mao:
+            cartaBT.append(carta.valorBT)
+            
+        return "cartas:" + "/".join(cartaBT)
 
+            
 
 class JogadorCPU(Jogador):
     def __init__ (self, nome, num):
@@ -127,3 +139,11 @@ class JogadorCPU(Jogador):
     def recebe_comando(self):
         return "Nada!"
     
+    def formata_cartas_BT(self):
+        cartaBT = []
+        for carta in self.mao:
+            cartaBT.append(carta.valorBT)
+            
+        return "cartas:" + "/".join(cartaBT)
+        
+        
