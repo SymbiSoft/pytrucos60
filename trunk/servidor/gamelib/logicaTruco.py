@@ -6,27 +6,27 @@ import cocos
 
 
 class Carta(object):
-    
     def __init__(self, valor, naipe):
         self.__valores = [None, '4', '5', '6', '7', 'Dama', 'Valete', 'Rei', 'As', '2', '3', 'Pica Fumo', 'Espadilha', 'Escopeta', 'Zap']
         self.__manilhas = ['Pica Fumo', 'Espadilha', 'Escopeta', 'Zap']
         self.__naipes = ['Ouros','Espadas', 'Copas', 'Paus']
         self.__dir_imagens = "data/imagens/"
-        self.valor = valor
-        self.naipe = naipe
+        self.valorJogo = valor
+        self.valorCarta = self.__valores[self.valorJogo]
+        self.__indice_naipe = naipe
+        self.naipe = self.__naipes[naipe]
+        self.valorBT = "%s%s" % (self.valorCarta[0].isdigit() and self.valorCarta[0] or self.valorCarta[0].lower(), self.naipe[0].lower())
         self.ehmanilha = False
         self.imagem = cocos.sprite.Sprite(self.__dir_imagens + self.montaNomeArq())
-
-
-
+        
     def __repr__(self):
         if self.ehmanilha == True:
-            return '%s' % self.__valores[self.valor]
+            return '%s' % self.__valores[self.valorJogo]
         else:
-            return '%s de %s'%(self.__valores[self.valor], self.__naipes[self.naipe])
+            return '%s de %s'%(self.__valores[self.valorJogo], self.__naipes[self.__indice_naipe])
 
     def montaNomeArq(self):
-        return '%s-%s.gif'%(self.__valores[self.valor], self.__naipes[self.naipe])
+        return '%s-%s.gif'%(self.__valores[self.valorJogo], self.__naipes[self.__indice_naipe])
 
 
 class Baralho(object):
@@ -38,8 +38,6 @@ class Baralho(object):
         self.__cartasJogo = self.__cartasJogo
         shuffle(self.__cartasJogo)
         self.cartas = self.__cartasJogo[:]
-        
-
     def ordenar(self):
         cartas = self.cartas
         
@@ -148,6 +146,7 @@ class Mesa(object):
 
     def definirOrdemJogadores(self):
         jogadoresMesa = []
+        
         for i in range(len(self.jogadores)):
             if i % 2 == 0:
                 jogadoresMesa.append(self.jogadores[i])
