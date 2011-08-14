@@ -12,15 +12,17 @@ class Carta(object):
         self.__naipes = ['Ouros','Espadas', 'Copas', 'Paus']
         self.__dir_imagens = "data/imagens/"
         self.valorJogo = valor
+        self.valorPadrao = valor
         self.valorCarta = self.__valores[self.valorJogo]
         self.__indice_naipe = naipe
         self.naipe = self.__naipes[naipe]
         self.valorBT = "%s%s" % (self.valorCarta[0].isdigit() and self.valorCarta[0] or self.valorCarta[0].lower(), self.naipe[0].lower())
+        self.nomeCartaPadrao = "%s de %s" % (self.__valores[self.valorPadrao], self.naipe)
         self.ehmanilha = False
         self.imagem = cocos.sprite.Sprite(self.__dir_imagens + self.montaNomeArq())
         
     def __repr__(self):
-        if self.ehmanilha == True:
+        if self.ehmanilha:
             return '%s' % self.__valores[self.valorJogo]
         else:
             return '%s de %s'%(self.__valores[self.valorJogo], self.__naipes[self.__indice_naipe])
@@ -38,11 +40,12 @@ class Baralho(object):
         self.__cartasJogo = self.__cartasJogo
         shuffle(self.__cartasJogo)
         self.cartas = self.__cartasJogo[:]
+        
     def ordenar(self):
         cartas = self.cartas
         
         def pegaValorCarta(carta):
-            return carta.valor
+            return carta.valorJogo
         self.cartas.sort(key=pegaValorCarta)
 
     def embaralhar(self):
@@ -56,8 +59,15 @@ class Baralho(object):
         self.cartas = self.cartas
         shuffle(self.cartas)
 
-    def recolherCartas(self):
+    def recolherCartas(self, jogadores):
+        for jogador in jogadores:
+            if jogador.mao:
+                jogador.mao = []
+        
         self.cartas = self.__cartasJogo[:]
+        
+        for carta in self.cartas:
+            carta.imagem.position = (0,0)
 
     def repartir_mao(self, jogador):
         for i in xrange(3):
@@ -96,6 +106,8 @@ class Jogador(object):
     def getEquipe(self):
         return self.__equipe 
 
+    def maoBT(self):
+        return [i.valorBT for i in self.mao]
 
 class Equipe(object):
     def __init__(self, jogadores):
@@ -125,7 +137,9 @@ class Mesa(object):
         self.cartas = []
         self.baralho = baralho
         self.jogadores = jogadores
+        self.jogadoresEmOrdemMesa = jogadores
         self.equipes = []
+        self.vira=None
 
 
     def definirEquipes(self):
@@ -136,7 +150,7 @@ class Mesa(object):
         #self.equipe = 1
     
     def distrubuirCartas(self):
-        self.baralho.recolherCartas()
+        #self.baralho.recolherCartas()
         
         for jogador in self.jogadores:
             if jogador.mao:
@@ -144,7 +158,11 @@ class Mesa(object):
             
             self.baralho.repartir_mao(jogador)
 
-    def definirOrdemJogadores(self):
+
+    def definir1aOrdemJogadores(self):
+        
+        print "Jogadores antes de ordenar:"
+        print self.jogadores
         jogadoresMesa = []
         
         for i in range(len(self.jogadores)):
@@ -155,7 +173,74 @@ class Mesa(object):
                 jogadoresMesa.append(self.jogadores[i])
         self.jogadores = jogadoresMesa
 
-    def limpar(self):
+
+
+    def definirOrdemJogadores(self, novaMao):
+        novaLista = []
+        
+        indiceGanhador = None
+        indiceIniciouPartida = None
+
+        
+        if novaMao:
+            for i in range(len(self.jogadoresEmOrdemMesa)):
+                if self.jogadoresEmOrdemMesa[i].iniciouUltimaPartida:
+                    indiceIniciouPartida = i
+            
+            if indiceIniciouPartida != None:
+                for i in range(len(self.jogadoresEmOrdemMesa)):
+                    if i == 0:
+                        novoIndice = indiceIniciouPartida+1
+                        if novoIndice > 3:
+                            novoIndice = 0
+                        novaLista.append(self.jogadoresEmOrdemMesa[novoIndice])
+                        
+                    else:
+                        novoIndice = novoIndice + 1
+                        if novoIndice > 3:
+                            novoIndice = 0
+                            
+                        novaLista.append(self.jogadoresEmOrdemMesa[novoIndice])
+                
+                for j in novaLista:
+                    if j.iniciouUltimaPartida:
+                        j.iniciouUltimaPartida = False
+                
+                novaLista[0].iniciouUltimaPartida = True
+                
+                self.jogadores = novaLista
+                
+            
+        else:
+            for i in range(len(self.jogadores)):
+                if self.jogadores[i].ganhadorUltimaRodada:
+                    indiceGanhador = i
+        
+            if indiceGanhador != None:
+                for i in range(len(self.jogadores)):
+                    if i == 0:
+                        novaLista.append(self.jogadores[indiceGanhador])
+                    else:
+                        novoIndice = indiceGanhador + i
+                        if novoIndice > 3:
+                            novoIndice = novoIndice - len(self.jogadores)
+                            
+                        novaLista.append(self.jogadores[novoIndice])
+            
+                self.jogadores = novaLista
+                
+        for j in self.jogadores:
+            if j.ganhadorUltimaRodada:
+                j.ganhadorUltimaRodada = False
+
+            
+        print "Jogadores depois de ordenar:"
+        print self.jogadores
+        
+        
+                
+ 
+    def limpar(self):     
         self.cartas = []
 
     def compararCartas(self, cartas):
@@ -163,12 +248,12 @@ class Mesa(object):
         cango = 0
         vencedor = 0
         for i in range (0 ,len(cartas)):
-            if cartas[i].valor == maior:
-                if (vencedor-i)==1: 
+            if cartas[i].valorJogo == maior:
+                if (vencedor-i)==-1 or (vencedor-i)==-3:
                     cango = 1
 
-            if cartas[i].valor > maior:
-                maior = cartas[i].valor
+            if cartas[i].valorJogo > maior:
+                maior = cartas[i].valorJogo
                 vencedor = i
                 cango = 0
 
@@ -177,3 +262,37 @@ class Mesa(object):
             return None
         else:
             return vencedor
+
+
+    def defineManilhas(self,baralho):
+        
+        self.zeraManilhas(baralho)
+        
+        self.vira=baralho.cartas.pop(randint(1,len(baralho.cartas)-1))
+
+        if self.vira.valorJogo == 10:
+                self.vira.valorJogo = 1
+        self.manilhas = []
+        for carta in baralho.cartas:
+            if carta.valorJogo == (self.vira.valorJogo + 1): 
+                self.manilhas.append(carta)
+                carta.ehmanilha = True
+
+        for manilha in self.manilhas:
+            if manilha.naipe == 'Ouros':
+                manilha.valorJogo = 11
+            elif manilha.naipe == 'Espadas':
+                manilha.valorJogo = 12
+            elif manilha.naipe == 'Copas':
+                manilha.valorJogo = 13
+            elif manilha.naipe == 'Paus':
+                manilha.valorJogo = 14
+
+    def zeraManilhas(self, baralho):
+        for carta in baralho.cartas:
+            if carta.ehmanilha:
+                carta.valorJogo = carta.valorPadrao
+                carta.ehmanilha = False
+
+
+

@@ -62,24 +62,15 @@ class MenuConexao( Menu ):
 
     def on_play( self ):
         log.info("on_play:"+str(self.conexoes[self.conexoes.keys()[self.conexao_escolhida]]))
-        if constantes.DEBUG:
-            import executa_conexao #run_cfg_game
-            print "Entrei com DEBUG"
-            executa_conexao.loadandrun(self.conexoes[self.conexoes.keys()[self.conexao_escolhida]])
-            #print self.conexoes[self.conexoes.keys()[self.conexao_escolhida]]
-        else:
-            import jogo
-            print "Passei fora do DEBUG"
-            
-            # Testando nova tela de Aguardando conexão em 11/05/11
-            #director.push(Scene (jogo.run(self.conexoes[self.conexoes.keys()[self.conexao_escolhida]])))
-            
-            #director.push(Scene (BGLayer("menu"),  TelaConexoes(self.conexoes[self.conexoes.keys()[self.conexao_escolhida]])))
-            tipo_conexao = self.conexoes[self.conexoes.keys()[self.conexao_escolhida]]
-            s = aguarda_conexao.get_menu_conexao(tipo_conexao)
-            director.replace(FadeTransition( s, 1 ) )
-             
-            #print self.conexoes[self.conexoes.keys()[self.conexao_escolhida]]
+        # Testando nova tela de Aguardando conexão em 11/05/11
+        #director.push(Scene (jogo.run(self.conexoes[self.conexoes.keys()[self.conexao_escolhida]])))
+        
+        #director.push(Scene (BGLayer("menu"),  TelaConexoes(self.conexoes[self.conexoes.keys()[self.conexao_escolhida]])))
+        tipo_conexao = self.conexoes[self.conexoes.keys()[self.conexao_escolhida]]
+        s = aguarda_conexao.get_menu_conexao(tipo_conexao)
+        director.replace(FadeTransition( s, 1 ) )
+         
+        #print self.conexoes[self.conexoes.keys()[self.conexao_escolhida]]
             
 
 def get_scene():

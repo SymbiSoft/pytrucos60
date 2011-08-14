@@ -17,8 +17,9 @@ from cocos.text import *
 #import pygame
 import config
 
-import screen_config
-import menu_back
+import tela_config
+#import tela_servidores
+import menu_simples
 
 import menu_conexoes
 
@@ -38,6 +39,7 @@ class MainMenu( Menu ):
 
         items.append( MenuItem(u'Iniciar Servidor', self.on_play) )
         items.append( MenuItem(u'Opções', self.on_settings) )
+        #items.append( MenuItem(u'Configuração Servidor', self.on_conf_servidor) )
         items.append( MenuItem(u'Créditos', self.on_credits) )
         items.append( MenuItem(u'Sair', self.on_quit) )
 
@@ -52,13 +54,16 @@ class MainMenu( Menu ):
     def on_scores( self ):
         pass #director.push(Scene (BGLayer("scores"), ScoresLayer(), BackMenu()) )
         
+    def on_conf_servidor(self):
+        director.push(FadeTransition( tela_servidores.get_servidor_scene(), duration = 0.4 ) )
+        
     def on_settings( self ):
-        director.push(FadeTransition( screen_config.get_scene(), duration = 0.4 ) )
+        director.push(FadeTransition( tela_config.get_scene(), duration = 0.4 ) )
         #director.push(Scene (BGLayer("menu"),  ConfigMenu()))
         
         
     def on_credits( self ):
-        director.push(FadeTransition( menu_back.get_scene(), duration = 0.4 ) )
+        director.push(FadeTransition( menu_simples.get_scene(), duration = 0.4 ) )
         #director.push(Scene (BGLayer("creditos"), BackMenu()) )
 
     def on_quit(self):

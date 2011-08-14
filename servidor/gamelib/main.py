@@ -52,10 +52,10 @@ def run():
     director.window.set_mouse_cursor(cursor)
     
     if config.playerseed == "": # first time this person has run the game
-            print "First time run generating seed"
-            config.playerseed = str(random.uniform(0, 99999999))+":"+datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-            config.save_option("playerseed", config.playerseed)
-            director.run( FadeTransition( intro, 10, mainmenu) )
+        print "First time run generating seed"
+        config.playerseed = str(random.uniform(0, 99999999))+":"+datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+        config.save_option("playerseed", config.playerseed)
+        director.run( FadeTransition( mainmenu, 10, intro) )
     
     else:   
         director.run( FadeTransition( mainmenu, 5, intro) )
@@ -66,6 +66,7 @@ def main():
     
     if config.profile:
         import os, profile
+        print "printou profilleee"
         timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
         filename = os.path.join(SCRIPT_DIR, "profile-%s.log" % timestamp)
         profile.runctx("run()", globals(), None, filename)

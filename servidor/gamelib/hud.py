@@ -26,11 +26,15 @@ class Hud(cocos.layer.Layer):
         self.alturaCarta= jogo.alturaCarta
         self.larguraCarta= jogo.larguraCarta
         
+        self.__dir_imagens = "data/imagens/"
+        
+        self.setaVezJogador = cocos.sprite.Sprite(self.__dir_imagens + "seta.png")
+        
         #self.game.push_handlers(self.on_gamer_connect, self.on_server_status)#self.on_game_over,  self.on_xp_gain,  self.on_game_win,  self.on_game_start , self.on_complete_level)
         
         #self.add(BGLayer("TEMP_HUD"))
 
-        self.jogador1 = Label("Partida Iniciada", font_name='Times New Roman',
+        self.placar = Label("Equipe 1     X     Equipe 2", font_name='Times New Roman',
             font_size=23,
             x=30, y=560,
             anchor_x='left', anchor_y='top')
@@ -62,13 +66,9 @@ class Hud(cocos.layer.Layer):
             anchor_x='left', anchor_y='top')
 
 
+        self.add(self.placar)
         cocos.actions.FadeOut(0)
 
-
-        #self.add(self.desenhaJogadores(1,"Wander"))
-        #self.add(self.desenhaJogadores(2,"Marluce"))
-        #self.add(self.desenhaJogadores(3,"Luana"))
-        #self.add(self.desenhaJogadores(4,"Ataide"))
 
 
 
@@ -102,6 +102,49 @@ class Hud(cocos.layer.Layer):
         
         self.add(jogador)
 
+
+    def informaVezJogador(self, jogador):
+        
+        if self.setaVezJogador.position != (0, 0):
+            self.remove(self.setaVezJogador)
+        
+        
+        equipe = jogador.getEquipe()
+        numero = jogador.getNumero()
+        
+        
+        
+        if equipe == 1:
+            pos1 = (self.larguraTela/2) - (self.larguraCarta + self.larguraCarta/2)
+            if numero == 1:
+                pos2 = self.alturaTela
+                angulo = 0
+            elif numero == 2:
+                pos2 = self.alturaCarta + 55
+                angulo = 180
+        elif equipe == 2:
+            pos2 = self.alturaTela/2+self.alturaCarta/2
+            if numero == 1:
+                pos1 = self.larguraTela
+                angulo = 90
+            elif numero == 2:
+                pos1 = 0
+                angulo = 270
+        
+        self.setaVezJogador.position = pos1, pos2
+        self.setaVezJogador.rotation = angulo
+        
+        self.add(self.setaVezJogador)
+
+
+    def atualizaPlacar(self, placar):
+        self.placar.element.text = "Equipe 1  %s  X  %s  Equipe 2" % placar
+        
+
+    def mostraPlacar(self, placar):
+        self.schedule(lambda plca:self.atualizaPlacar(placar))
+
+
     def update_jogador(self, jogador, posicao):
         if posicao == 0:
             self.jogador1.element.color = (0,0,255,255)
@@ -124,6 +167,11 @@ class Hud(cocos.layer.Layer):
     def update_QtdJogador(self, qtde):
         self.qtdJogadores.element.text = "Numero de Jogadores conectados: %s" % qtde
 
+
+    
+    def updateVezJogador(self):
+        pass
+    
     
     def posicionaJogadores(self, posicao, nomeJogador):
         self.schedule(lambda posJog:self.desenhaJogadores(posicao, nomeJogador))

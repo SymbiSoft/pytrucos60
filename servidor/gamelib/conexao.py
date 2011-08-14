@@ -46,7 +46,7 @@ class ConexaoBT(): #threading.Thread):
         print "Aguardando conexão: "
         (client, addr) = socket.accept()
         print addr
-        print "  î Conectado!"
+        print "    Conectado!" 
         return (client, addr)
 
 

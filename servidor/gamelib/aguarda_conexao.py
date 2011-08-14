@@ -142,11 +142,13 @@ class TelaConexoes(cocos.layer.Layer):
             self.jogadores[nrJogador].start()
             print self.jogadores[nrJogador]
             time.sleep(1)
-            while not self.jogadores[nrJogador].conectou():
-                if self.partidaIniciada:
-                    print "Abortou conexao!!"
-                    break
+            
             try:
+                while not self.jogadores[nrJogador].conectou():
+                    if self.partidaIniciada:
+                        print "Abortou conexao!!"
+                        break
+                
                 self.jogadores[nrJogador].conectou()
             except IndexError:
                 pass
