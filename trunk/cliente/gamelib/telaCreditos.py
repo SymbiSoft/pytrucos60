@@ -13,17 +13,17 @@ import sysinfo
 from graphics import Image
 
 from constantes import *
+import util
 
 class TelaCreditos:
     """Classe que mostra as tela de créditos
     """
     imagens = None
     def __init__(self):
-        self.largura_tela, self.altura_tela = self.__getTamanho_tela()
+        self.largura_tela, self.altura_tela = util.getTamanho_tela()
         self.espacamento_linha = int(self.altura_tela/16)
         
-    def __getTamanho_tela(self):
-        return sysinfo.display_pixels()
+
     
     def carregarImagem(self):
         pass

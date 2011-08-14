@@ -26,7 +26,7 @@ class Configuracoes:
         
         self.set_valor(self.pref, 'dir_base', caminho)
         # Ajuste para "full" se quiser que seja usada toda a tela
-        self.set_valor(self.pref,'tela_jogo', 'large')
+        self.set_valor(self.pref,'tela_jogo', 'full')
         # 'large'   # softchaves fica visivel
         # 'full'    # fica em tela cheia
         # Define o título
