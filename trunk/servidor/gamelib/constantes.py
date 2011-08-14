@@ -35,10 +35,10 @@ CAPTION = u"PyTruco4S60 - Server"
 TITULO_JOGO = u"PyTruco4S60 - Server"
 
 #: Definição da dimensões da janela do jogo
-LARGURA_JANELA, ALTURA_JANELA = 800, 600
+LARGURA_JANELA, ALTURA_JANELA = 800,600 #1024, 768
 
 #: Definição do nome da fonte usada no jogo
-FONTE_JOGO = 'Mail Ray Stuff'
+FONTE_JOGO = 'Casual' #'Mail Ray Stuff'
 
 #: Definição do volume dos sons
 MUSIC_VOLUME = 0.25
