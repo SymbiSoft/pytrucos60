@@ -37,7 +37,7 @@ class Pytrucos60:
         if e32.pys60_version_info > (1,9):
             appuifw.app.directional_pad = False
             if appuifw.touch_enabled():
-                appuifw.app.screen= self.configuracao.pref['tela_jogo']
+                appuifw.app.screen= self.configuracao.pref['tela_jogo'] #'large' #
                 TOUCH_ENABLED = True
             else:
                 appuifw.note(u"Touch screen nao encontrado", "error")
@@ -52,13 +52,16 @@ class Pytrucos60:
         self.telaInstrucoes = TelaInstrucoes()
         self.resetar()      
 
+
     def resetar(self):
         self.running = 0
         self.estado_atual = 'menu'
         self.carregar_menu(self.estado_atual)
         
+        
     def callback(self, evento):
         self.desenha_estado_menu(self.estado_atual)
+
 
     def desenha_estado_menu(self, estado_atual):
         """Desenha a tela da seleção atual"""
@@ -81,7 +84,7 @@ class Pytrucos60:
         elif estado_atual == 'conexao':
             #self.conexoes()
             appuifw.note(u"Conexão", "info")
-            #self.estado_atual = 'menu'
+            self.estado_atual = 'menu'
         elif estado_atual == 'opcoes':
             #self.opcoes()
             appuifw.note(u"Opções", "info")
@@ -152,7 +155,7 @@ class Pytrucos60:
 
 
 
-    def quit(self):
+    def quit(self, rect=None):
         """Função de sair da aplicação
         """
         self.running = -1
