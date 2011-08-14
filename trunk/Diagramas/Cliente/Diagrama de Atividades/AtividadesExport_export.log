@@ -1,0 +1,122 @@
+Exporting package to 'Z:\Diagramas\Cliente\Diagrama de Atividades\AtividadesExport.xml'
+Retrieving data for export: diagram elements
+Retrieving data for export: links
+Retrieving data for export: constraints
+Retrieving data for export: attribute tagged values
+Retrieving data for export: operation tagged values
+Retrieving data for export: operation parameter tagged values
+Retrieving data for export: connector tagged values
+Completed data retrieval
+Pre-processing export tree...
+Completed pre-processing
+Processing package: Modelos de Atividades
+Element:0: Confirmar Endereço Servidor
+Element:1: Conectar Servidor
+Element:2: Escolher Dispositivo Servidor
+Element:3: Conexao GPRS
+Element:4: Aguardar Inicio Partida
+Element:5: Event1
+Element:6: Aguarda Jogada dos Outros Jogadores
+Element:7: Receber Cartas
+Element:8: Aguardar a Vez de Jogar
+Element:9: ActivityFinal
+Element:10: Fim
+Element:11: Montar Cartas na Tela
+Element:12: Sair
+Element:13: Editar Endereço Servidor
+Element:14: 
+Element:15: Verificar se está conectado a um ponto de acesso
+Element:16: Inicio
+Element:17: 
+Element:18: Aceitar/Recusar Pedido de Incremento de Pontos
+Element:19: 
+Element:20: Fim
+Element:21: Possui Serviço PyTrucoS60?
+Element:22: Informa Vencedor
+Element:23: Verificar se Bluetooth está ativado
+Element:24: 
+Element:25: Receber Cartas
+Element:26: 
+Element:27: Verificar se já está conectado a Internet
+Element:28: Inicio
+Element:29: Carregar Splash
+Element:30: Jogar Truco
+Element:31: 
+Element:32: Opção Menu
+Element:33: Jogar Novamente?
+Element:34: Jogar Novamente?
+Element:35: 
+Element:36: Carregar Tela Opções
+Element:37: Carregar Tela Créditos
+Element:38: Fim
+Element:39: Inicio
+Element:40: Recebe Notificação do Ganhador da Rodada
+Element:41: Informar que o serviço não foi encontrado no servidor
+Element:42: Ativado?
+Element:43: Exibe Lista Pontos de Acesso disponíveis
+Element:44: Jogar
+Element:45: Endereço  Correto? 
+Element:46: Fim
+Element:47: Editar Endereço Servidor
+Element:48: Tipo Conexão
+Element:49: Ativar bluetooh
+Element:50: Inicio
+Element:51: Informar que o serviço não foi encontrado no servidor
+Element:52: 
+Element:53: Inicio
+Element:54: Não
+Element:55: Desconectar do Servidor
+Element:56: Descartar Carta
+Element:57: Jogar PyTrucoS60
+Element:58: Fim
+Element:59: Carregar Menu
+Element:60: Fim da Mão?
+Element:61: Buscar Dispositivos Próximos
+Element:62: Escolher Tipo conexão
+Element:63: 
+Element:64: 
+Element:65: Conectar Internet
+Element:66: 
+Element:67: Fim da Partida?
+Element:68: 
+Element:69: Conectado?
+Element:70: Exibir Lista de Opções de Conexão
+Element:71: Endereço Correto?
+Element:72: Conexão Bluetooth
+Element:73: Informar que o serviço não está disponivel no servidor
+Element:74: Escolher Conexão
+Element:75: 
+Element:76: Conexão Wi-Fi
+Element:77: Escolhe Ponto de Acesso
+Element:78: Pedir Incremento de  Pontos
+Element:79: 
+Element:80: Possui Serviço PyTrucoS60?
+Element:81: 
+Element:82: Carregar Tela Instruções
+Element:83: Inicio
+Element:84: Activity1
+Element:85: Informar Vencedor
+Element:86: Confimar Endereço Servidor
+Element:87: 
+Element:88: 
+Element:89: Conecta ao Ponto de Acesso
+Element:90: Listar Dispositivos Encontrados
+Element:91: 
+Element:92: Possui Serviço PyTrucoS60?
+Element:93: Conectado?
+Element:94: Fim
+Element:95: Ativar?
+Diagram: Diagrama de Atividade - Conexão Wi-Fi
+Diagram: Conexão Wi-Fi
+Diagram: Diagrama de Atividade - Conexao GPRS
+Diagram: Conexao GPRS
+Diagram: Diagrama de Atividade - Conexao Bluetooth
+Diagram: Conexão Bluetooth
+Diagram: Diagrama de Atividade - Jogar Truco
+Diagram: Jogar Truco
+Diagram: Diagrama de Atividade - Jogar PyTrucoS60
+Diagram: Jogar PyTrucoS60
+Diagram: Diagrama Atividade Geral - PyTrucoS60
+Adding State-Tables
+Formatting output XML...please wait
+XMI Document Export Complete!

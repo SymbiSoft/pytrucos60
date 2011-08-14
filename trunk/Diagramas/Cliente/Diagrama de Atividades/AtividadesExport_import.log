@@ -1,0 +1,134 @@
+
+Importing Model from XMI
+Root Package: Modelos de Atividades
+Add Classifier: Event1
+Add Classifier: Activity1
+Add State: Confirmar Endereço Servidor
+Add State: Conectar Servidor
+Add State: Escolher Dispositivo Servidor
+Add State: Conexao GPRS
+Add State: Aguardar Inicio Partida
+Add State: Aguarda Jogada dos Outros Jogadores
+Add State: Receber Cartas
+Add State: Aguardar a Vez de Jogar
+Add State: ActivityFinal
+Add State: Fim
+Add State: Montar Cartas na Tela
+Add State: Sair
+Add State: Editar Endereço Servidor
+Add State: 
+Add State: Verificar se está conectado a um ponto de acesso
+Add State: Inicio
+Add State: 
+Add State: Aceitar/Recusar Pedido de Incremento de Pontos
+Add State: 
+Add State: Fim
+Add State: Possui Serviço PyTrucoS60?
+Add State: Informa Vencedor
+Add State: Verificar se Bluetooth está ativado
+Add State: 
+Add State: Receber Cartas
+Add State: 
+Add State: Verificar se já está conectado a Internet
+Add State: Inicio
+Add State: Carregar Splash
+Add State: Jogar Truco
+Add State: 
+Add State: Opção Menu
+Add State: Jogar Novamente?
+Add State: Jogar Novamente?
+Add State: 
+Add State: Carregar Tela Opções
+Add State: Carregar Tela Créditos
+Add State: Fim
+Add State: Inicio
+Add State: Recebe Notificação do Ganhador da Rodada
+Add State: Informar que o serviço não foi encontrado no servidor
+Add State: Ativado?
+Add State: Exibe Lista Pontos de Acesso disponíveis
+Add State: Jogar
+Add State: Endereço  Correto? 
+Add State: Fim
+Add State: Editar Endereço Servidor
+Add State: Tipo Conexão
+Add State: Ativar bluetooh
+Add State: Inicio
+Add State: Informar que o serviço não foi encontrado no servidor
+Add State: 
+Add State: Inicio
+Add State: Não
+Add State: Desconectar do Servidor
+Add State: Descartar Carta
+Add State: Jogar PyTrucoS60
+Add State: Fim
+Add State: Carregar Menu
+Add State: Fim da Mão?
+Add State: Buscar Dispositivos Próximos
+Add State: Escolher Tipo conexão
+Add State: 
+Add State: 
+Add State: Conectar Internet
+Add State: 
+Add State: Fim da Partida?
+Add State: 
+Add State: Conectado?
+Add State: Exibir Lista de Opções de Conexão
+Add State: Endereço Correto?
+Add State: Conexão Bluetooth
+Add State: Informar que o serviço não está disponivel no servidor
+Add State: Escolher Conexão
+Add State: 
+Add State: Conexão Wi-Fi
+Add State: Escolhe Ponto de Acesso
+Add State: Pedir Incremento de  Pontos
+Add State: 
+Add State: Possui Serviço PyTrucoS60?
+Add State: 
+Add State: Carregar Tela Instruções
+Add State: Inicio
+Add State: Informar Vencedor
+Add State: Confimar Endereço Servidor
+Add State: 
+Add State: 
+Add State: Conecta ao Ponto de Acesso
+Add State: Listar Dispositivos Encontrados
+Add State: 
+Add State: Possui Serviço PyTrucoS60?
+Add State: Conectado?
+Add State: Fim
+Add State: Ativar?
+Resolving Classifiers
+Resolving Owners
+Resolve Package Links
+Add Extensions
+Add Diagrams
+Adding Diagram : Diagrama de Atividade - Conexão Wi-Fi
+Adding Diagram : Conexão Wi-Fi
+Adding Diagram : Diagrama de Atividade - Conexao GPRS
+Adding Diagram : Conexao GPRS
+Adding Diagram : Diagrama de Atividade - Conexao Bluetooth
+Adding Diagram : Conexão Bluetooth
+Adding Diagram : Diagrama de Atividade - Jogar Truco
+Adding Diagram : Jogar Truco
+Adding Diagram : Diagrama de Atividade - Jogar PyTrucoS60
+Adding Diagram : Jogar PyTrucoS60
+Adding Diagram : Diagrama Atividade Geral - PyTrucoS60
+Adding Elements to Diagram : Diagrama de Atividade - Conexão Wi-Fi
+Adding Elements to Diagram : Diagrama de Atividade - Conexao GPRS
+Adding Elements to Diagram : Diagrama de Atividade - Conexao Bluetooth
+Adding Elements to Diagram : Diagrama de Atividade - Jogar Truco
+Adding Elements to Diagram : Diagrama de Atividade - Jogar PyTrucoS60
+Adding Elements to Diagram : Diagrama Atividade Geral - PyTrucoS60
+Resolving DiagramIDs
+Adding Links to Diagram : Diagrama de Atividade - Conexão Wi-Fi
+Adding Links to Diagram : Diagrama de Atividade - Conexao GPRS
+Adding Links to Diagram : Diagrama de Atividade - Conexao Bluetooth
+Adding Links to Diagram : Diagrama de Atividade - Jogar Truco
+Adding Links to Diagram : Diagrama de Atividade - Jogar PyTrucoS60
+Adding Links to Diagram : Diagrama Atividade Geral - PyTrucoS60
+Resolving Association Classes
+Resolving Parameter Types
+Resolving Attribute Types
+Resolving Note links
+Fixup external references
+Import Complete!
