@@ -1,0 +1,27 @@
+Ainda resta fazer:
+
+
+- Conexão usando GPRS e WiFi
+
+- Desenhos Baralhos, telas, etc.
+
+
+
+To Do List:
+
+
+OK (- Definir ordem dos jogadores qndo se inicia uma nova mão
+       A cada mão um jogador fica sendo o primeiro a jogar qnd essa mão inicia, depois segue a ordem de acordo com o ganhador da rodada; (Sentido Anti-horario)
+       qndo um mão termina cangada, o definidor de ordem se perde, pois não foi definido um ganhador.) OK
+
+- Implementar opções de pedido de Truco, Meio-Pau, Nove e Doze;
+
+- Permitir descartar somente quando estiver na sua vez;
+
+- Mostrar placar da mao e da rodada;
+
+- Verificar o pq do lentidão nas animações.
+
+- pedido de truco pelo ultimo jogador da rodada; (Quem aceita?)
+
+- quando a terceira rodada fica cangada o placar ta dando 2 X 2 nao pode, o pondto tem q ir para quem ganhou a primeira rodada.

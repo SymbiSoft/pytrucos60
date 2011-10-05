@@ -56,6 +56,7 @@ class Carta(object):
         self.pos_marca_selecao = pos_marca_selecao
         self.imagem = Image.new((LARGU_CARTA,ALTUR_CARTA))
         self.valor = valor
+        self.marcada = False
         self.selecionada = False
     
     
@@ -97,7 +98,7 @@ class Jogo:
         for i in range(len(self.cartas_recebidas)):
             self.cartas.append(Carta(posCartas[i], dictCartas[self.cartas_recebidas[i]], posCartasSelec[i], self.cartas_recebidas[i]))
         
-        self.canvas = appuifw.Canvas(event_callback = None,
+        self.canvas = appuifw.Canvas(event_callback = self.handle_event,
                                      redraw_callback = self.handle_redraw)
         appuifw.app.body = self.canvas
         self.render = 1
@@ -129,8 +130,8 @@ class Jogo:
         for carta in self.cartas:
             self.carregaCarta(carta)
             self.canvas.blit(carta.imagem, target = carta.posicao_mesa)
-            self.canvas.bind(key_codes.EButton1Up, self.seleciona_carta, carta.rect)
-            self.canvas.bind(key_codes.EButton1Down, self.deseleciona_carta, carta.rect)        
+            #self.canvas.bind(key_codes.EButton1Up, self.seleciona_carta, carta.rect)
+            #self.canvas.bind(key_codes.EButton1Down, self.deseleciona_carta, carta.rect)        
             
 
 
@@ -150,24 +151,26 @@ class Jogo:
         for carta in self.cartas:
             if self.tocou_na_carta(pos, carta.rect):
                 self.espacoCartas.clear(0)
-                self.espacoCartas.rectangle(carta.pos_marca_selecao, outline=RGB_RED, width=3, fill=RGB_RED)
-                self.canvas.blit(self.espacoCartas, target = POS_ESPAC_CARTAS, mask=self.maskCartas)
+                if carta.marcada:
+                    self.espacoCartas.rectangle(carta.pos_marca_selecao, outline=RGB_RED, width=3, fill=RGB_RED)
+                    self.canvas.blit(self.espacoCartas, target = POS_ESPAC_CARTAS, mask=self.maskCartas)
             else:
-                carta.selecionada = False
+                carta.marcada = False
         
     def seleciona_carta(self, pos):
         ''' Seleciona carta '''
         for i in range(len(self.cartas)):
             if self.tocou_na_carta(pos, self.cartas[i].rect):
                 self.espacoCartas.clear(0)
-                self.espacoCartas.rectangle(self.cartas[i].pos_marca_selecao, outline=RGB_BLUE, width=3, fill=RGB_BLUE)
-                self.canvas.blit(self.espacoCartas, target = POS_ESPAC_CARTAS, mask=self.maskCartas)
-                self.cartas[i].selecionada = True
+                if self.cartas[i].selecionada:
+                    self.espacoCartas.rectangle(self.cartas[i].pos_marca_selecao, outline=RGB_BLUE, width=3, fill=RGB_BLUE)
+                    self.canvas.blit(self.espacoCartas, target = POS_ESPAC_CARTAS, mask=self.maskCartas)
+                #self.cartas[i].selecionada = True
                 break
 
     def descartar(self, pos):
         for carta in self.cartas:
-            if carta.selecionada == True:
+            if carta.selecionada:
                 print "Descartei: %s" % carta.valor
                 self.cartas.remove(carta)
                 print "Tamanho de Cartas: %s" % len(self.cartas)
@@ -175,7 +178,58 @@ class Jogo:
                 self.handle_redraw()
                 
 
+    def handle_event(self, evento):
+        #evento['type'] == 257 #down
+        #evento['type'] == 263 #drag
+        #evento['type'] == 258 #up
+        #evento = {'modifiers':0, 'type': 263, 'pos':(165,209)}
 
+        
+        
+        if evento['type'] == 257:
+            for carta in self.cartas:
+                carta.marcada = False
+                if self.tocou_na_carta(evento['pos'], carta.rect):
+                    carta.marcada = True
+                    #self.espacoCartas.clear(0)
+                    #self.espacoCartas.rectangle(carta.pos_marca_selecao, outline=RGB_RED, width=3, fill=RGB_RED)
+                    #self.canvas.blit(self.espacoCartas, target = POS_ESPAC_CARTAS, mask=self.maskCartas)
+                    
+                else:
+                    carta.marcada = False
+        if evento['type'] == 258:
+            for carta in self.cartas:
+                carta.selecionada = False
+                
+                if self.tocou_na_carta(evento['pos'], carta.rect):
+                    if carta.marcada:
+                        carta.selecionada = True
+                        #self.espacoCartas.clear(0)
+                        #self.espacoCartas.rectangle(carta.pos_marca_selecao, outline=RGB_BLUE, width=3, fill=RGB_BLUE)
+                        #self.canvas.blit(self.espacoCartas, target = POS_ESPAC_CARTAS, mask=self.maskCartas)
+                        
+                    else:
+                        carta.selecionada = False
+                        
+                    carta.marcada = False
+                        
+            #if carta.marcada.rect != carta.selecionada.rect:
+                #self.espacoCartas.rectangle(ultimaCartaSelecionada.pos_marca_selecao, outline=RGB_BLUE, width=3, fill=RGB_BLUE)
+        self.espacoCartas.clear(0)
+        for carta in self.cartas: 
+            if carta.marcada:
+                self.espacoCartas.rectangle(carta.pos_marca_selecao, outline=RGB_RED, width=3, fill=RGB_RED)
+            if carta.selecionada:
+                self.espacoCartas.rectangle(carta.pos_marca_selecao, outline=RGB_BLUE, width=3, fill=RGB_BLUE)
+                            
+        
+        
+        self.canvas.blit(self.espacoCartas, target = POS_ESPAC_CARTAS, mask=self.maskCartas)
+         
+         
+          
+        #print evento
+        
 
     def handle_redraw(self, rect=None):
         if self.telajogo:

@@ -78,7 +78,7 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
 
     def loop_jogo(self):
         
-        while max(self.placarPartida) < 12:
+        while max(self.placarPartida) < 12: #Voltar para 12 assim q terminar os testes
             self.novaMao = True
             self.iniciaMao()
             
@@ -126,7 +126,11 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
     
     def iniciaMao(self):
         self.placarMao = (0,0)
-        self.valorMao = 1
+        if max(self.placarPartida) == 11:
+            self.valorMao = 3
+        else:
+            self.valorMao = 1
+            
         self.statusMao = 0 #0-Normal, 1-Trucada, 2-Seis, 3-Nove, 4-Doze
         
         for equipe in self.mesa.equipes:
@@ -164,9 +168,10 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
             
 
         status = ''
-        while max(self.placarMao) < 2 or status == 'fim':
+        while max(self.placarMao) < 2 :#or status != 'fim':
             self.mesa.definirOrdemJogadores(self.novaMao)
-            status = self.jogarRodada()
+            #status = 
+            self.jogarRodada()
             print "########################################"
             print "########### PLACAR DA RODADA ###########"
             print self.placarMao
@@ -220,6 +225,7 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
         
         
         trucoFugido = False
+        seisFugido = False
         print "Irá começar um ciclo de %s rodadas" % len(self.mesa.jogadores)
         
         for jogador in self.mesa.jogadores:
@@ -230,7 +236,7 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
             self.mesa.jogadores[ordem].vezDeJogar = True
                 
             
-            
+            jogadorTrucador = None
             for jogador in self.mesa.jogadores:
                 if jogador.vezDeJogar:
                     jogadorDaVez = jogador
@@ -261,7 +267,7 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
                     
                     print "Pediu-se Trucoo!!"
                     print "Status da Mao: %s" % self.statusMao
-                    jogadorTrucador = jogador.vezDeJogar
+                    jogadorTrucador = jogadorDaVez
                     
                     if self.statusMao == 0:
                         
@@ -278,6 +284,8 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
                                 while not resp:
                                     pass
                                 print resp
+                            else:
+                                jogador.envia_comandoJS({'truco':"Enviado"})
                         
                         proximoJogador = ordem+1
                         if proximoJogador>len(self.mesa.jogadores)-1:
@@ -393,7 +401,8 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
                             elif cmd2 == 'nao':
                                 break
                                 
-                        elif cmd1 == 'nao':
+                        elif cmd1 == 'nao': # negando pedido de truco
+                            trucoFugido = True
                             break
                         
                     else: 
@@ -460,8 +469,8 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
                         elif cmd2 == 'nao':
                             break
                     
-                    elif cmd1 == 'nao':
-                        trucoFugido = True
+                    elif cmd1 == 'nao': # negando pedido de meio pau
+                        seisFugido = True
                         break
                 else:
                     print "Partida não pode valer seis!"
@@ -598,10 +607,7 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
             
             time.sleep(5)
             
-            for carta in self.mesa.cartas:
-                self.remove(carta.imagem)
-            
-            self.mesa.limpar()
+
             
             
             
@@ -609,9 +615,12 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
         else:
             if len(self.mesa.cartas) < 4:
                 if trucoFugido:
+                    print "O truco foi fugido!!!"
                     equipeGanhadora = jogadorTrucador.getEquipe()
                     self.mesa.equipes[equipeGanhadora-1].pontosMao += 2
-                    return 'fim'
+                    self.placarMao = (self.mesa.equipes[0].pontosMao, self.mesa.equipes[1].pontosMao)
+                    
+                    #return 'fim'
                     
                 
             
@@ -622,10 +631,17 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
                 
         if equipeGanhadora == None:
             equipeGanhadora = "cango"
-            
+        
+        for carta in self.mesa.cartas:
+            self.remove(carta.imagem)
+        
+        self.mesa.limpar()
+        self.hud.removeSeta()
+        
+     
         self.informaPontosMao(equipeGanhadora)
         
-        return 'ok'
+        #return 'ok'
         
         
     
@@ -659,7 +675,7 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
     def desenhaCartaVira(self):
         if self.mesa.vira:
             print self.mesa.vira
-            self.mesa.vira.imagem.position = 250, 250
+            self.mesa.vira.imagem.position = 100, 125
             self.add(self.mesa.vira.imagem, z=1 )
 
        
@@ -682,9 +698,9 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
                 pos2 = self.alturaCarta/2 + 50
         elif jogador.getEquipe() == 2:
             pos2 = self.alturaTela/2
-            if jogador.getNumero() == 1:
+            if jogador.getNumero() == 2:
                 pos1 = self.larguraTela - (5*self.larguraCarta)/2
-            elif jogador.getNumero() == 2:
+            elif jogador.getNumero() == 1:
                 pos1 = self.larguraCarta/2
                 
         for carta in jogador.mao:        
@@ -708,9 +724,9 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
                 posDesc2 = self.alturaTela/2 - self.alturaCarta/2 
         elif jogador.getEquipe() == 2:
             posDesc2 = self.alturaTela/2
-            if jogador.getNumero() == 1:
+            if jogador.getNumero() == 2:
                 posDesc1 = self.larguraTela/2 + self.larguraCarta/2 
-            elif jogador.getNumero() == 2:
+            elif jogador.getNumero() == 1:
                 posDesc1 = self.larguraTela/2 - self.larguraCarta/2 
             
             
@@ -758,7 +774,7 @@ class Jogo(cocos.layer.Layer, EventDispatcher): # must be layer - scene causes a
         
 
 
-Jogo.register_event_type('on_game_start')   
+Jogo.register_event_type('on_game_start')
 Jogo.register_event_type('on_xp_gain')   
 Jogo.register_event_type('on_game_over')
 Jogo.register_event_type('on_gamer_connect')

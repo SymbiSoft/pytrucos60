@@ -80,8 +80,8 @@ class Jogador(object):
     def descartaBT(self, carta):
         for i in range(len(self.mao)):
             if self.mao[i].valorBT == carta:
-                indice = i
-        carta = self.mao[indice]
+                #indice = i
+                carta = self.mao[i]#ndice]
         self.mao.remove(carta)
         
         return carta
@@ -203,7 +203,7 @@ class JogadorCPU(Jogador):
                     resp =  {'OK':'Pedido de Truco  Recebido'}
                 elif self.cmd['truco'] == 'aceita?':
                     opcoesTruco = ['sim', 'nao', 'seis']
-                    resp =  'sim' #opcoesTruco[randrange(0, len(opcoesTruco))]
+                    resp =  'nao' #opcoesTruco[randrange(0, len(opcoesTruco))]
                     
                 elif self.cmd['truco'].startswith('aceitou') :
                     nomeJogadorAceitouTruco =  self.cmd['truco'].split(':')[1]
@@ -243,8 +243,8 @@ class JogadorCPU(Jogador):
                 if self.cmd['truco'].startswith(':'): 
                     resp =  {'OK':'Pedido de Truco  Recebido'}
                 elif self.cmd['truco'] == 'aceita?':
-                    opcoesTruco = ['sim', 'nao', 'seis']
-                    resp =  'sim' #opcoesTruco[randrange(0, len(opcoesTruco))]
+                    opcoesTruco = ['sim', 'nao'] #, 'seis']
+                    resp =  opcoesTruco[randrange(0, len(opcoesTruco))]
                     
                 elif self.cmd['truco'].startswith('aceitou') :
                     nomeJogadorAceitouTruco =  self.cmd['truco'].split(':')[1]

@@ -50,6 +50,7 @@ POS_CARTA03_SELEC = ((2*LARGU_CARTA+26,0),(3*LARGU_CARTA+35,ALTUR_CARTA+10))
 posCartas = [POS_CARTA01, POS_CARTA02, POS_CARTA03]
 posCartasSelec = [POS_CARTA01_SELEC, POS_CARTA02_SELEC, POS_CARTA03_SELEC]
 
+listBotoes = {"truco":((0,0),(140,34)), "meiopau":((0,34),(140,68)), "nove":((0,68),(140,104)), "doze":((0,135),(140,169))}
 
 #Dicionario para definir os valores do posicionamento no arquivos das cartas:
 LC = LARGU_CARTA
