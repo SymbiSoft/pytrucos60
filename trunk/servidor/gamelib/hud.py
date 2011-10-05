@@ -86,10 +86,10 @@ class Hud(cocos.layer.Layer):
         elif equipe == 2:
             pos2 = self.alturaTela/2+self.alturaCarta/2
             ancora_y = 'bottom'
-            if numero == 1:
+            if numero == 2:
                 pos1 = self.larguraTela
                 ancora_x = 'right'
-            elif numero == 2:
+            elif numero == 1:
                 pos1 = 0
                 ancora_x = 'left'
                 
@@ -102,12 +102,16 @@ class Hud(cocos.layer.Layer):
         
         self.add(jogador)
 
+    def removeSeta(self):
+        self.setaVezJogador.position = (9999, 9999)
+
 
     def informaVezJogador(self, jogador):
         
+        
+        
         if self.setaVezJogador.position != (0, 0):
             self.remove(self.setaVezJogador)
-        
         
         equipe = jogador.getEquipe()
         numero = jogador.getNumero()
@@ -115,20 +119,20 @@ class Hud(cocos.layer.Layer):
         
         
         if equipe == 1:
-            pos1 = (self.larguraTela/2) - (self.larguraCarta + self.larguraCarta/2)
+            pos1 = (self.larguraTela/2) #- (self.larguraCarta + self.larguraCarta/2)
             if numero == 1:
-                pos2 = self.alturaTela
+                pos2 = self.alturaTela - self.alturaCarta - 77
                 angulo = 0
             elif numero == 2:
-                pos2 = self.alturaCarta + 55
+                pos2 = self.alturaCarta + 110
                 angulo = 180
         elif equipe == 2:
-            pos2 = self.alturaTela/2+self.alturaCarta/2
-            if numero == 1:
-                pos1 = self.larguraTela
+            pos2 = self.alturaTela/2 #+self.alturaCarta/2
+            if numero == 2:
+                pos1 = self.larguraTela - (3 * self.larguraCarta) - 23
                 angulo = 90
-            elif numero == 2:
-                pos1 = 0
+            elif numero == 1:
+                pos1 = 3 * self.larguraCarta + 30
                 angulo = 270
         
         self.setaVezJogador.position = pos1, pos2

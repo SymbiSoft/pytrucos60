@@ -195,6 +195,7 @@ height1 = 3 * photo1.height() + 30
 canvas = Canvas(width=width1, height=height1)
 canvas.pack()
 
+from logicaTruco import *
 baralho = Baralho()
 baralho.embaralhar()
 

@@ -19,17 +19,12 @@ def prepara_path():
     de qualquer maneira.
 
     """
-    try:
-        __file__
-    except NameError, e:
-        print e
-    else:
-        rel = lambda s: os.path.abspath(os.path.join(os.path.dirname(__file__), s))
-        sys.path.insert(0, rel("lib.zip"))
-    
     
     if os.path.exists("gamelib"):
         sys.path.insert(1, "gamelib")
+    if os.path.exists("cocos"):
+        sys.path.insert(1, "cocos")
+    
         
 
 

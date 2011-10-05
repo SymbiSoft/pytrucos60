@@ -32,10 +32,13 @@ class Jogo:
             self.espacoCartas = None
             self.cartas = None
             self.matrizCartas = util.cria_imagem('matrizCartas.png')
-            self.espacoVez = Image.new((200,30)) #espacoCartas.size)
+            self.matrizBotoes = util.cria_imagem('BotoesIncrementos.png')
+            self.espacoVez = Image.new((400,30)) #espacoCartas.size)
             self.espacoPontos = Image.new((104,30))
             self.espacoPontosNos = Image.new((40,25))
             self.espacoPontosEles = Image.new((40,25))
+            self.euPediTruco = False
+            
             
             
             self.canvas = appuifw.Canvas(event_callback = self.handle_event,
@@ -58,6 +61,11 @@ class Jogo:
             self.espacoCartas = Image.new(espacoCartas.size) #espacoCartas.size)
             self.maskCartas = Image.new(espacoCartas.size, 'L') #tons de cinza 8-bits
             self.maskCartas.blit(espacoCartas)
+            
+            espacoBotoesIncremento  = util.cria_imagem('espacoBotoesIncremento.png')
+            self.espacoBotoesIncremento = Image.new(espacoBotoesIncremento.size) 
+            self.maskBotoes = Image.new(espacoBotoesIncremento.size, 'L') #tons de cinza 8-bits
+            self.maskCartas.blit(espacoBotoesIncremento)
             
             #espacoInfos = util.cria_imagem('espacoInfos.png')
             #self.espacoInfos = Image.new(espacoInfos.size) #espacoCartas.size)
@@ -83,9 +91,9 @@ class Jogo:
             self.canvas.bind(key_codes.EButton1Down, self.descartar, rect_botao_descartar)
             
             #Botão Truco
-            rect_botao_descartar = ((513,263),(630,301)) #((303,64),(452,114)) # 
-            self.fundoMesa.rectangle(rect_botao_descartar, outline=RGB_BLUE, width=1)
-            self.canvas.bind(key_codes.EButton1Down, self.pedirTuco, rect_botao_descartar)
+            rect_botao_truco = ((513,263),(630,301)) #((303,64),(452,114)) # 
+            self.fundoMesa.rectangle(rect_botao_truco, outline=RGB_BLUE, width=1)
+            self.canvas.bind(key_codes.EButton1Down, self.pedirTuco, rect_botao_truco)
             
             self.espacoPontosNos.clear(RGB_VERDE)
             self.espacoPontosNos.text((2, 23), u"0", fill = RGB_BLACK,font=(u'Nokia Hindi S60',30,appuifw.STYLE_BOLD))
@@ -101,7 +109,7 @@ class Jogo:
     
     def pedirTuco(self, rect):
         self.conexao.envia_comando(json.write({'truco':'pedido'}))
-        data = json.read(self.conexao.recebe_comando())
+        self.euPediTruco = True
         
         
 
@@ -120,6 +128,12 @@ class Jogo:
         for i in range(len(cartas_recebidas)):
             self.cartas.append(Carta(posCartas[i], dictCartas[cartas_recebidas[i]], posCartasSelec[i], cartas_recebidas[i]))
 
+    def desenhaBotoesIncremento(self, nomeBotao):
+        
+        self.canvas.blit(self.matrizBotoes, target=(0,0), source=listBotoes[nomeBotao])
+    
+    
+            
     def desenhaCartas(self):
         #mask = util.cria_imagem('mascaraCartas.png')
         #self.maskCarta = Image.new(mask.size, 'L') #tons de cinza 8-bits
@@ -134,39 +148,40 @@ class Jogo:
         carta.imagem.blit(self.matrizCartas, target=(0, 0), source=carta.source)
 
 
-    def loop_jogo(self):    
+    def loop_jogo(self):
         try: 
             if self.conexao.esta_conectado():
                 pos = 95
                 while True:
-                    data = json.read(self.conexao.recebe_comando())
+                    
+                    self.data = json.read(self.conexao.recebe_comando())
                     
                     
-                    print data
-                    self.log("recebido: %s \n" % data)
-                    if not data :
+                    print self.data
+                    self.log("recebido: %s \n" % self.data)
+                    if not self.data :
                         break
                     else:
-                        if 'cartas' in data: #startswith('cartas'):
+                        if 'cartas' in self.data: #startswith('cartas'):
                             #self.cartas = data['cartas']
                             #print "dados recebido (inicio cartas): %s" % data
                             #self.log("dados recebido (inicio cartas): %s" % data)
                             #dadosRecebidos = data.split(':')
                             
-                            self.cartas_recebidas = data['cartas'] #dadosRecebidos[1].split('/')
+                            self.cartas_recebidas = self.data['cartas'] #dadosRecebidos[1].split('/')
                             self.conexao.envia_comando(json.write({'OK':'Cartas Recebidas'}))
                             self.cria_cartas(self.cartas_recebidas)
                             self.desenhaCartas()
                         
                         
                         
-                        elif 'truco' in data:
-                            if data['truco'].startswith(":"):
-                                nomeJogadorPediuTruco = data['truco'].split(':')[1]
+                        elif 'truco' in self.data:
+                            if self.data['truco'].startswith(":"):
+                                nomeJogadorPediuTruco = self.data['truco'].split(':')[1]
                                 self.informaPedidoTruco(nomeJogadorPediuTruco)
                                 self.conexao.envia_comando(json.write({'OK':'Pedido Informado'}))
                                 
-                            elif data['truco'] == 'aceita?':
+                            elif self.data['truco'] == 'aceita?':
                                 resp = appuifw.query(u"O Jogador %s pediu Truco. Aceita?" % nomeJogadorPediuTruco, 'query')
                                 if resp:
                                     respTruco = 'sim'
@@ -176,92 +191,82 @@ class Jogo:
                                 self.conexao.envia_comando(respTruco)
                                 e32.ao_sleep(1)
                                 
-                            
-                            elif data['truco'].startswith('aceitou') :
-                                nomeJogadorAceitouTruco = data['truco'].split(':')[1]
-                                self.mostraInfos('O Jogador %s aceitou o Truco' % nomeJogadorAceitouTruco)
+                                if respTruco == 'sim':
+                                    #desenhar o botão Meio-Pau
+                                    pass
+                                    
                                 
+                            
+                            elif self.data['truco'].startswith('aceitou') :
+                                nomeJogadorAceitouTruco = self.data['truco'].split(':')[1]
+                                
+                                self.desabiltaBotaoTruco()
+                                
+                                if self.euPediTruco:
+                                    #self.mostraInfos('O Jogador %s aceitou o Truco. Jogue sua carta.' % nomeJogadorAceitouTruco)
+                                    appuifw.note(u"O Jogador %s aceitou o Truco. Jogue sua carta." % nomeJogadorAceitouTruco, 'info')
+                                else:
+                                    self.mostraInfos('O Jogador %s aceitou o Truco' % nomeJogadorAceitouTruco)
+                                    
                                 self.conexao.envia_comando(json.write({'OK':'O Jogador %s aceitou o Truco' % nomeJogadorAceitouTruco}))
                                 
-                            elif data['truco'].startswith('recusou') :
+                            elif self.data['truco'].startswith('recusou') :
                                 pass
                             
                             
-                            elif data['truco'] == '':
+                            elif self.data['truco'] == '':
                                 pass
                         
                         
-                        elif 'fim-mao' in data:
+                        elif 'fim-mao' in self.data:
                             print "Recebi comando de fim de Mao"
-                            if data['fim-mao'][0] == 'ganhou':
+                            if self.data['fim-mao'][0] == 'ganhou':
                                 self.espacoPontosNos.clear(RGB_VERDE)
-                                e32.ao_sleep(1)
-                                self.espacoPontosNos.text((2, 23), u"%s" % data['fim-mao'][1], fill = RGB_BLACK,font=(u'Nokia Hindi S60',30,appuifw.STYLE_BOLD))
+                                self.espacoPontosNos.text((2, 23), u"%s" % self.data['fim-mao'][1], fill = RGB_BLACK,font=(u'Nokia Hindi S60',30,appuifw.STYLE_BOLD))
                                 self.canvas.blit(self.espacoPontosNos, target = (407,97))
-                                e32.ao_sleep(1)
-                                
-                                self.espacoPontosNos.clear(RGB_VERDE)
-                                e32.ao_sleep(1)
-                                self.espacoPontosNos.text((2, 23), u"%s" % data['fim-mao'][1], fill = RGB_BLACK,font=(u'Nokia Hindi S60',30,appuifw.STYLE_BOLD))
-                                self.canvas.blit(self.espacoPontosNos, target = (407,97))
-                                e32.ao_sleep(1)
-                                
-                                self.espacoPontosNos.clear(RGB_VERDE)
-                                e32.ao_sleep(1)
-                                self.espacoPontosNos.text((2, 23), u"%s" % data['fim-mao'][1], fill = RGB_BLACK,font=(u'Nokia Hindi S60',30,appuifw.STYLE_BOLD))
-                                self.canvas.blit(self.espacoPontosNos, target = (407,97))
-                                e32.ao_sleep(1)
-                                
-                                self.espacoPontosNos.clear(RGB_VERDE)
-                                e32.ao_sleep(1)
-                                self.espacoPontosNos.text((2, 23), u"%s" % data['fim-mao'][1], fill = RGB_BLACK,font=(u'Nokia Hindi S60',30,appuifw.STYLE_BOLD))
-                                self.canvas.blit(self.espacoPontosNos, target = (407,97))
-                                e32.ao_sleep(1)
-                                
-                                self.espacoPontosNos.clear(RGB_VERDE)
-                                e32.ao_sleep(1)
-                                self.espacoPontosNos.text((2, 23), u"%s" % data['fim-mao'][1], fill = RGB_BLACK,font=(u'Nokia Hindi S60',30,appuifw.STYLE_BOLD))
-                                
-                            elif data['fim-mao'][0] == 'perdeu':
+                            elif self.data['fim-mao'][0] == 'perdeu':
                                 self.espacoPontosEles.clear(RGB_VERDE)
-                                self.espacoPontosEles.text((2, 23), u"%s" % data['fim-mao'][1], fill = RGB_BLACK,font=(u'Nokia Hindi S60',30,appuifw.STYLE_BOLD))
+                                self.espacoPontosEles.text((2, 23), u"%s" % self.data['fim-mao'][1], fill = RGB_BLACK,font=(u'Nokia Hindi S60',30,appuifw.STYLE_BOLD))
                                 
                                 
                             #self.telajogo.text((10, pos), u"recv >> %s" % data, fill = RGB_BLACK,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))
                             #self.canvas.blit(self.telajogo)
                             self.handle_redraw()
                             self.limpaCartasMao()
+                            self.euPediTruco = False
                             self.conexao.envia_comando(json.write({'OK':'Fim Mao'}))
                             
+                            
                         
-                        elif 'fim-partida' in data:
+                        elif 'fim-partida' in self.data:
                             self.informaFimPartida()
                                 
                                 
                             
                             
                             
-                        elif 'vez' in data:
-                            self.mostraVez(data['vez'])
+                        elif 'vez' in self.data:
+                            self.mostraVez(self.data['vez'])
                         
-                        elif 'pontos' in data:
-                            self.mostraPontos(data['pontos'])
+                        elif 'pontos' in self.data:
+                            self.mostraPontos(self.data['pontos'])
                         
                         
                         
-                        elif data == 1:
+                        elif self.data == 1:
                             pass   
                         
                         
                         else:
                             #self.mostraVez(data)
-                            print "<< %s >>" % str(data) 
+                            print "<< %s >>" % str(self.data) 
                             
                             
                             #self.telajogo.text((10, pos), u"recv >> %s" % data, fill = RGB_BLACK,font=(u'Nokia Hindi S60',20,appuifw.STYLE_BOLD))
                             #self.canvas.blit(self.telajogo)
                             #self.handle_redraw()
                         pos += 15
+                        
         except Exception, erro:
             msgErro = "Erro do loop_jogo: " + str(erro) + "\n"
             print msgErro
@@ -270,6 +275,9 @@ class Jogo:
 
 
 
+    def desabiltaBotaoTruco(self):
+        #incluir código para desabilitar o botão de truco
+        pass
 
     def mostraPontos(self, quem):
         
@@ -357,6 +365,7 @@ class Jogo:
                 break
 
     def descartar(self, pos=None):
+        print "To descartando!!!"
         for carta in self.cartas:
             if carta.selecionada == True:
                 print "Descartei: %s" % carta.valor
