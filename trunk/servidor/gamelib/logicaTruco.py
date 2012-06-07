@@ -20,6 +20,7 @@ class Carta(object):
         self.nomeCartaPadrao = "%s de %s" % (self.__valores[self.valorPadrao], self.naipe)
         self.ehmanilha = False
         self.imagem = cocos.sprite.Sprite(self.__dir_imagens + self.montaNomeArq())
+        self.imagemCostas = cocos.sprite.Sprite(self.__dir_imagens + 'costas.png')
         
     def __repr__(self):
         if self.ehmanilha:
@@ -28,12 +29,14 @@ class Carta(object):
             return '%s de %s'%(self.__valores[self.valorJogo], self.__naipes[self.__indice_naipe])
 
     def montaNomeArq(self):
-        return '%s-%s.gif'%(self.__valores[self.valorJogo], self.__naipes[self.__indice_naipe])
+        return '%s-%s.png'%(self.__valores[self.valorJogo], self.__naipes[self.__indice_naipe])
 
 
 class Baralho(object):
     def __init__(self):
+        self.__dir_imagens = "data/imagens/"
         self.__cartasJogo = []
+        self.imagem = cocos.sprite.Sprite(self.__dir_imagens + 'baralho.png')
         for valor in xrange(1,11):
             for naipe in xrange(4):
                 self.__cartasJogo.append(Carta(valor,naipe))
@@ -67,7 +70,10 @@ class Baralho(object):
         self.cartas = self.__cartasJogo[:]
         
         for carta in self.cartas:
-            carta.imagem.position = (0,0)
+            carta.imagem.position = (-100,-100)
+            carta.imagem.rotation = 0
+            carta.imagemCostas.position = (-100,-100)
+            carta.imagemCostas.rotation = 0
 
     def repartir_mao(self, jogador):
         for i in xrange(3):
@@ -117,6 +123,10 @@ class Equipe(object):
     
     def __repr__(self):
         return '%s e %s' % (self.jogadores[0].nome, self.jogadores[1].nome)
+    
+    def nomeJogadores(self):
+        return [self.jogadores[0].nome, self.jogadores[1].nome]    
+    
     
     def setPontos(self, pontos):
         self.pontos += pontos

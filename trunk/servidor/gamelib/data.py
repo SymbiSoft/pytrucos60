@@ -28,6 +28,7 @@ path = os.path.abspath(os.path.join(os.getcwd(), DATA_DIR))
 log.info("Caminho do aquivos de dados: ["+path+"]")
 
 font.add_directory(os.path.join(path, "fonts"))
+print "carreguei fontes"
     
 pyglet.resource.path.append(path)
 pyglet.resource.reindex()

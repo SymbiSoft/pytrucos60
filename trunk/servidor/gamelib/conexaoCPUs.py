@@ -14,7 +14,6 @@ from cocos.layer import *
 from cocos.scenes.transitions import *
 
 import jogo
-import conexaoCPUs
 from hudTC import Hud
 import constantes
 from jogador import JogadorBT, JogadorCPU, GerenciaJogadores
@@ -24,33 +23,33 @@ import janela_erros
 
 
 
-class MenuIniciaPartida(Menu):
-    def __init__(self, tipo_conexao, tc):
-        super( MenuIniciaPartida, self).__init__() 
-        self.font_item['font_size'] = 40
-        self.font_item['font_name'] = 'Forte'
-        self.font_item['color'] = (75,135,73,255)
+class ConexaoCPUs(cocos.layer.Layer): # must be layer - scene causes anims/actions to fail
+    def __init__(self, jogadores):
+        super( ConexaoCPUs, self).__init__()
         
-        self.font_item_selected['font_size'] = 40
-        self.font_item_selected['font_name'] = 'Forte'
-        self.font_item_selected['color'] = (75,135,73,255)
+        # Configurando camadas
+        # HUD
+        self.hud = Hud(self)
         
-        self.position=(-50,-250)
+        self.add(self.hud, z=-1)
         
-        self.tc = tc
-        items = []
-        items.append( MenuItem('Iniciar Partida', self.inicia_partida) )
-        self.create_menu(items)
         
+        self.titulo = Label("Aguardando conexao", font_name='Times New Roman',
+            font_size=23,
+            x=30, y=600,
+            anchor_x='left', anchor_y='top')
+        
+        
+        self.add(self.titulo)
+        
+    
 
-    def inicia_partida(self):
-        
-        
-        self.tc.partidaIniciada = True
-        
-        jogadores = self.tc.obtemJogadores()
-        
 
+    def mostraConexaoCpus(self, jogadores):
+        #self.tc.partidaIniciada = True
+        
+        #jogadores = self.tc.obtemJogadores()
+        
         qtdJogadoresBT = len(jogadores)
         if qtdJogadoresBT < 4:
             print "Socket do jogador que vai ser banido: %s" % str(jogadores[-1].socket)
@@ -67,7 +66,7 @@ class MenuIniciaPartida(Menu):
             while nrJogadorCPU < 4:
                 print "imprimindo CPUs"
                 jogadorCPU = "CPU %s" % nrJogadorCPU
-                self.tc.hud.informaJogador(jogadorCPU , nrJogadorCPU)
+                self.hud.informaJogador(jogadorCPU , nrJogadorCPU)
                 print "nrJogadorCPU: %s" % nrJogadorCPU
                 
                 for jogador in jogadores:
@@ -92,10 +91,10 @@ class MenuIniciaPartida(Menu):
         
         print "qtdJogadoresCPU: ", len(jogadores) - qtdJogadoresBT
         print "qtdJogadoresTotais: ", len(jogadores)
-            
+            #time.sleep(10)
+        #director.push( FadeTransition(jogo.run(jogadores), 1.0 ) )
         
-        director.push( FadeTransition(jogo.run(jogadores), 1.0 ) )
-
+        #director.push(Scene (BGLayer("mesa"),jogo.run(jogadores)))
 
     def on_quit(self):
         # called by esc
@@ -121,9 +120,9 @@ class TelaConexoes(cocos.layer.Layer):
         self.add(self.hud, z=-1)
         
         
-        self.titulo = Label("Aguardando Conexoes:", font_name='Forte',
-            font_size=60, color = (75,135,73,255),
-            x=100, y=650,
+        self.titulo = Label("Aguardando conexao", font_name='Times New Roman',
+            font_size=23,
+            x=30, y=600,
             anchor_x='left', anchor_y='top')
         
         
@@ -137,9 +136,6 @@ class TelaConexoes(cocos.layer.Layer):
             threadConexao.start()
         else:
             socket = None
-
-        #self.add(ClickableLabel("Iniciar Partida", self.inicaThread, (720, 600-30)), z = 1)
-
 
     def conecta_jogadoresBT(self):
         nrJogador = 0
@@ -180,8 +176,22 @@ class TelaConexoes(cocos.layer.Layer):
                     self.partidaIniciada = True
             
             
+            
     def obtemJogadores(self):
         return self.jogadores
+        
+def run(jogadores): 
+    s = cocos.scene.Scene()
+    telaConexCpus =  ConexaoCPUs(jogadores)
+    s.add( telaConexCpus, z=1, name='ctrl')
+    s.add(BGLayer("conexao"))
+    telaConexCpus.mostraConexaoCpus(jogadores)
+    #hud = Hud(jogo)
+    #s.add( hud, z=10, name='hud' )
+    #jogo.hud = hud
+
+    return s
+
 
 
 def get_menu_conexao(tipo_conexao):
@@ -194,7 +204,6 @@ def get_menu_conexao(tipo_conexao):
     try:
         scene.add(BGLayer("conexao"))
         scene.add( MultiplexLayer(tc), z=2 )
-        scene.add(tc, z=2 )
         mip = MenuIniciaPartida(tipo_conexao, tc)
         scene.add( mip, z=0 )
         return scene
@@ -204,3 +213,5 @@ def get_menu_conexao(tipo_conexao):
         print e
         erro = Scene(janela_erros.get_janela(msgErro))
         return erro
+
+

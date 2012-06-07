@@ -22,14 +22,37 @@ class MenuConexao( Menu ):
 
     def __init__(self):
         super( MenuConexao, self).__init__(u"Escolha um Tipo de Conexão") 
-        self.font_title['font_size'] = 38
-        self.font_title['color'] = (128,16,32,255)
-        self.menu_valign = BOTTOM
-        #self.font_item['color'] = (32,16,32,255)
-        self.font_item['font_size'] = 16
-        self.font_item['color'] = (189,190,190,255)
-        self.font_item_selected['color'] = (128,16,32,255)
-        self.font_item_selected['font_size'] = 24
+        
+        self.font_title = {
+            'font_name':'Forte',
+            'font_size':45,
+            'color':(75,135,73,255),
+            'bold':False,
+            'italic':False,
+            'anchor_y':'center',
+            'anchor_x':'center',
+            'x':500, 'y':300,
+        }
+              
+        self.menu_valign = CENTER
+        
+        self.font_item = {
+            'font_name':'Forte',
+            'font_size':40,
+            'color':(75,135,73,255),
+        }
+        
+        self.font_item_selected = {
+            'font_name':'Forte',
+            'font_size':40,
+            'color':(0,0,0,255),
+        }
+        
+        
+        #self.x = 35
+        self.y = -150
+        
+        
        
         self.conexoes = {'3Bluetooth': 'bluetooth', '2Wireless':'wireless', '1GPRS':'gprs'} #SortByName(BuildLookupTable("levels", "defs/levels.def") )
         log.debug("conexoes:"+str(self.conexoes.keys()))
@@ -74,6 +97,6 @@ class MenuConexao( Menu ):
             
 
 def get_scene():
-    scene = Scene(BGLayer("menu"), MenuConexao() )
+    scene = Scene(BGLayer("menu2"), MenuConexao() )
     return scene
 
