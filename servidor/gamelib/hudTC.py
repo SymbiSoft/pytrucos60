@@ -25,53 +25,25 @@ class Hud(cocos.layer.Layer):
         
         #self.add(BGLayer("TEMP_HUD"))
 
-        self.exp = Label("Exp: ", font_name='Times New Roman',
-            font_size=16,
-            x=100, y=500,
-            anchor_x='center', anchor_y='center')
-        self.timer = Label("Time: 0.0 s", font_name='Times New Roman',
-            font_size=16,
+        self.timer = Label("Time: 0.0 s", font_name='Forte',
+            font_size=16, color=(75,135,73,255),
             x=700, y=600)
-        self.jogadores = Label("Aguardando conexao", font_name='Times New Roman',
-            font_size=23, color=(0, 0, 255, 255),
-            x=30, y=600,
-            anchor_x='left', anchor_y='top')
 
-        self.jogador1 = Label("Jogador 1: ", font_name='Times New Roman',
-            font_size=23,
-            x=30, y=560,
-            anchor_x='left', anchor_y='top')
-
-
-        self.jogador2 = Label("Jogador 2: ", font_name='Times New Roman',
-            font_size=23,
-            x=30, y=530,
-            anchor_x='left', anchor_y='top')
-
-        self.jogador3 = Label("Jogador 3: ", font_name='Times New Roman',
-            font_size=23,
-            x=30, y=500,
-            anchor_x='left', anchor_y='top')
-
-        self.jogador4 = Label("Jogador 4: ", font_name='Times New Roman',
-            font_size=23,
-            x=30, y=470,
-            anchor_x='left', anchor_y='top')
-
-        self.qtdJogadores = Label("Numero de Jogadores conectados: 0", font_name='Times New Roman',
-            font_size=30,
-            x=200, y=340,
-            anchor_x='left', anchor_y='top')
-
-
+        self.jogadoresConctados=[]
+        posY=500
+        for jogador in range(4):
+            indiceJog = jogador+1
+            self.jogadoresConctados.append(Label("Jogador %s: "%indiceJog, font_name='Forte',
+            font_size=40, color=(75,135,73,255),
+            x=120, y=posY,
+            anchor_x='left', anchor_y='top'))
+            posY -=50 
+            
         cocos.actions.FadeOut(0)
-
-        self.add(self.jogadores)
-        self.add(self.jogador1)
-        self.add(self.jogador2)
-        self.add(self.jogador3)
-        self.add(self.jogador4)
-        self.add(self.qtdJogadores)
+        for LabJogador in self.jogadoresConctados:
+            self.add(LabJogador)
+        
+            
         self.add(self.timer)
         self.start_time = time.time()
         self.clock = time.time()
@@ -85,39 +57,23 @@ class Hud(cocos.layer.Layer):
 
     def update_jogador(self, jogador, posicao):
         if posicao == 0:
-            self.jogador1.element.color = (0,0,255,255)
-            self.jogador1.element.text = "Jogador 1: %s Conectado!" % jogador
+            self.jogadoresConctados[0].element.color = (0,0,255,255)
+            self.jogadoresConctados[0].element.text = "Jogador 1: %s Conectado!" % jogador
         elif posicao == 1:
-            self.jogador2.element.color = (0,255,0,255)
-            self.jogador2.element.text = "Jogador 2: %s Conectado!" % jogador
+            self.jogadoresConctados[1].element.color = (0,255,0,255)
+            self.jogadoresConctados[1].element.text = "Jogador 2: %s Conectado!" % jogador
         elif posicao == 2:
-            self.jogador3.element.color = (0,0,255,255)
-            self.jogador3.element.text = "Jogador 3: %s Conectado!" % jogador
+            self.jogadoresConctados[2].element.color = (0,0,255,255)
+            self.jogadoresConctados[2].element.text = "Jogador 3: %s Conectado!" % jogador
         elif posicao == 3:
-            self.jogador4.element.color = (0,255,0,255)
-            self.jogador4.element.text = "Jogador 4: %s Conectado!" % jogador
-
-
-    def informaQtdJogador(self, qtde):
-        self.schedule(lambda qtJog:self.update_QtdJogador(qtde))
-
-
-    def update_QtdJogador(self, qtde):
-        self.qtdJogadores.element.text = "Numero de Jogadores conectados: %s" % qtde
+            self.jogadoresConctados[3].element.color = (0,255,0,255)
+            self.jogadoresConctados[3].element.text = "Jogador 4: %s Conectado!" % jogador
 
 
 
     def informaJogador(self, nomeJogador, posicao):
         self.schedule(lambda upJog:self.update_jogador(nomeJogador,posicao))
 
-
-    def update_figura(self):
-        self.sprite = cocos.sprite.Sprite('imagens/3-Espadas.gif')
-        self.sprite.position = 320,240
-        self.add(self.sprite)
-
-    def mostraDessenhoTeste(self):
-        self.schedule(lambda upJog:self.update_figura())
 
     def desconectaJogador(self, nomeJogador):
         self.schedule(lambda upJog:self.on_game_over(nomeJogador))
@@ -145,10 +101,6 @@ class Hud(cocos.layer.Layer):
             anchor_x='center', anchor_y='center')
         self.add(loose)
         loose.do(MoveTo((x/3,y/2), 3) | ScaleBy( 2, 3 ) )
-    
-    def on_xp_gain(self):
-        log.info("on_xp_gain")
-        self.exp.element.text = "Exp: %d" % self.game.player.exp
             
     def on_game_start(self):
         self.do(FadeIn(2))

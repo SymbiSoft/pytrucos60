@@ -28,12 +28,15 @@ class MainMenu( Menu ):
     def __init__(self):
         super( MainMenu, self).__init__() 
         
-        self.menu_valign = BOTTOM
-        #self.font_item['color'] = (32,16,32,255)
-        self.font_item['font_size'] = 16
-        self.font_item['color'] = (189,190,190,255)
-        self.font_item_selected['color'] = (128,16,32,255)
-        self.font_item_selected['font_size'] = 24
+        #self.menu_valign = BOTTOM
+        self.font_item['font_size'] = 55
+        self.font_item['color'] = (75,135,73,255)
+        self.font_item['font_name'] = 'Forte'
+        #self.font_item['bold'] = True
+        self.font_item_selected['color'] = (0,0,0,255)
+        self.font_item_selected['font_size'] = 55
+        self.font_item_selected['font_name'] = 'Forte'
+        #self.font_item_selected['bold'] = True
        
         items = []
 
@@ -42,7 +45,10 @@ class MainMenu( Menu ):
         #items.append( MenuItem(u'Configuração Servidor', self.on_conf_servidor) )
         items.append( MenuItem(u'Créditos', self.on_credits) )
         items.append( MenuItem(u'Sair', self.on_quit) )
-
+        
+        self.x = 100
+        self.y = -80
+        
         self.create_menu(items)
 
     def on_enter(self):

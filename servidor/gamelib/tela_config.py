@@ -262,7 +262,7 @@ class ConfigMenu( Menu ):
         self.arqjogo = value
 
 def get_scene():
-    scene = Scene(BGLayer("menu"), ConfigMenu() )
+    scene = Scene(BGLayer("menu2"), ConfigMenu() )
     text_layer = textInputLayer()
     scene.add(text_layer)
     return scene
